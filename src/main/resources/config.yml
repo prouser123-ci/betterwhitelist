@@ -1,9 +1,9 @@
-
 filetype:
+enableBanSync: true
 discord:
   token: "TOKEN"
   guildid:
   prefix: "!"
   validationCommandName: "minecraft"
-  validationSuccess: "Message 1"
-  validationError: "Message 2"
+  validationSuccess: "You've been whitelisted!"
+  validationError: "Something went wrong. Does the provided username exist?"

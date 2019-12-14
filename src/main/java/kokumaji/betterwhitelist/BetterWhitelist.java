@@ -1,31 +1,56 @@
 package kokumaji.betterwhitelist;
 
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import kokumaji.betterwhitelist.commands.BetterWhitelistCommand;
-import kokumaji.betterwhitelist.discord.BotMain;
+import kokumaji.betterwhitelist.discord.BotCommandListener;
+import kokumaji.betterwhitelist.discord.GuildBanListener;
+import kokumaji.betterwhitelist.listeners.MinecraftBanListener;
+import lombok.Getter;
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.security.auth.login.LoginException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public final class BetterWhitelist extends JavaPlugin {
 
+    @Getter
+    private static JDA Jda = null;
+
     private FileConfiguration config = this.getConfig();
+
+    public static Plugin getPlugin() {
+        return getPlugin(BetterWhitelist.class);
+    }
 
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
         this.getCommand("betterwhitelist").setExecutor(new BetterWhitelistCommand());
-        String discordToken = config.getString("discord.token");
-        if(discordToken.contains("TOKEN")) {
-            System.out.println("[DiscordWhitelister] Token not defined in config file. Skipping bot initialization.");
-        }
-        else {
-            BotMain bot = new BotMain();
-            try {
-                bot.init(discordToken);
-            } catch (LoginException e) {
+        Bukkit.getPluginManager().registerEvents(new MinecraftBanListener(), this);
 
+        File userDataFile = new File(getPlugin().getDataFolder() + "/userdata.csv");
+        if(!userDataFile.exists()) {
+            try {
+                userDataFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
 
@@ -36,8 +61,44 @@ public final class BetterWhitelist extends JavaPlugin {
         this.saveConfig();
     }
 
-    public static Plugin getPlugin() {
+    public static void initBot() {
+        String discordToken = getPlugin().getConfig().getString("discord.token");
+        if (discordToken.contains("TOKEN")) {
+            System.out.println("[DiscordWhitelister] Token not defined in config file. Skipping bot initialization.");
+        } else {
+            try {
+                Jda = new JDABuilder(AccountType.BOT).setToken(discordToken).build().awaitReady();
+                Jda.addEventListener(new BotCommandListener());
+                Jda.addEventListener(new GuildBanListener());
+            } catch (LoginException | InterruptedException ignored) {
 
-        return getPlugin(BetterWhitelist.class);
+            }
+        }
     }
+
+    public static void writeToCSV(String pUUID, String pDiscordID, String pJoinedAt) {
+        try {
+            CSVWriter writer = new CSVWriter(new FileWriter(getPlugin().getDataFolder() + "/userdata.csv", true));
+
+            String[] userDataLine = {pUUID, pDiscordID, pJoinedAt};
+            writer.writeNext(userDataLine);
+
+            writer.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<String[]> getUserData(Reader reader) throws IOException {
+        List<String[]> list = new ArrayList<>();
+        CSVReader csvReader = new CSVReader(reader);
+
+        list = csvReader.readAll();
+
+        reader.close();
+        csvReader.close();
+        return list;
+    }
+
 }
