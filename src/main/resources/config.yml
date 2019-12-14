@@ -1,0 +1,9 @@
+
+filetype:
+discord:
+  token: "TOKEN"
+  guildid:
+  prefix: "!"
+  validationCommandName: "minecraft"
+  validationSuccess: "Message 1"
+  validationError: "Message 2"

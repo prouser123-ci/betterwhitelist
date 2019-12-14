@@ -1,0 +1,13 @@
+name: BetterWhitelist
+version: ${project.version}
+main: kokumaji.betterwhitelist.BetterWhitelist
+api-version: 1.13
+prefix: BetterWhitelist
+authors: [Kokumaji]
+description: BetterWhitelist adds a Discord based verification system
+commands:
+  betterwhitelist:
+    usage: /betterwhitelist
+    description: Main command
+    aliases: /bw, /bwhitelist, /betterw
+    permission: betterwhitelist.command
