@@ -5,13 +5,11 @@ import kokumaji.betterwhitelist.discord.DiscordBot;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
@@ -32,10 +30,10 @@ public class MinecraftBanListener implements Listener {
                 Reader reader = Files.newBufferedReader(Paths.get(BetterWhitelist.getPlugin().getDataFolder() + "/userdata.csv"));
                 List<String[]> userData = BetterWhitelist.getUserData(reader);
 
-                for(int i = 0; i < userData.size(); i++) {
+                for (int i = 0; i < userData.size(); i++) {
                     String[] current = userData.get(i);
 
-                    if(current[0].equals(p.getUniqueId().toString())) {
+                    if (current[0].equals(p.getUniqueId().toString())) {
 
                         String userID = current[1];
                         Guild guild = DiscordBot.getJda().getGuildById(guildID);

@@ -2,8 +2,6 @@ package kokumaji.betterwhitelist.discord;
 
 import kokumaji.betterwhitelist.BetterWhitelist;
 import lombok.SneakyThrows;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -11,15 +9,11 @@ import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 
 public class GuildBanListener extends ListenerAdapter {
 
@@ -30,7 +24,7 @@ public class GuildBanListener extends ListenerAdapter {
     @Override
     public void onGuildBan(GuildBanEvent e) {
 
-        if(banSyncEnabled) {
+        if (banSyncEnabled) {
             User user = e.getUser();
             Reader reader = null;
             List<String[]> userData = null;
@@ -38,10 +32,10 @@ public class GuildBanListener extends ListenerAdapter {
             reader = Files.newBufferedReader(Paths.get(BetterWhitelist.getPlugin().getDataFolder() + "/userdata.csv"));
             userData = BetterWhitelist.getUserData(reader);
 
-            for(int i = 0; i < userData.size(); i++) {
+            for (int i = 0; i < userData.size(); i++) {
                 String[] current = userData.get(i);
 
-                if(current[1].equals(user.getId())) {
+                if (current[1].equals(user.getId())) {
 
                     OfflinePlayer player = Bukkit.getOfflinePlayer(current[0]);
                     Bukkit.getPlayer(player.getUniqueId()).kickPlayer("You've been banned on Discord.");
