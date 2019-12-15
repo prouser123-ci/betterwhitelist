@@ -1,9 +1,15 @@
-filetype:
 enableBanSync: true
+oneAccountPerUser: true
 discord:
+  reqRole:
+    enabled: false
+    roleid: "ROLE_ID"
+    validFailedMsg: "You don't have the required role to do this"
   token: "TOKEN"
   guildid:
   prefix: "!"
   validationCommandName: "minecraft"
   validationSuccess: "You've been whitelisted!"
   validationError: "Something went wrong. Does the provided username exist?"
+  lang:
+    userAlreadyWhitelisted: "You are already whitelisted!"

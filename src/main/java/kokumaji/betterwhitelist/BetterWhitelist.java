@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -22,7 +23,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
 
-public final class BetterWhitelist extends JavaPlugin {
+public class BetterWhitelist extends JavaPlugin {
 
     @Getter
     private static JDA Jda = null;

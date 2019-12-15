@@ -18,13 +18,12 @@ import java.util.List;
 
 public class MinecraftBanListener implements Listener {
 
-    FileConfiguration config = BetterWhitelist.getPlugin().getConfig();
-    String guildID = config.getString("discord.guildid");
-    private boolean banSyncEnabled = config.getBoolean("enableBanSync");
+    String guildID = BetterWhitelist.getPlugin().getConfig().getString("discord.guildid");
+    private boolean banSyncEnabled = BetterWhitelist.getPlugin().getConfig().getBoolean("enableBanSync");
 
     @EventHandler
     public void onPlayerBan(PlayerQuitEvent e) throws IOException {
-        if (config.getBoolean("enableBanSync")) {
+        if (BetterWhitelist.getPlugin().getConfig().getBoolean("enableBanSync")) {
             Player p = e.getPlayer();
             if (p.isBanned()) {
                 Reader reader = Files.newBufferedReader(Paths.get(BetterWhitelist.getPlugin().getDataFolder() + "/userdata.csv"));
