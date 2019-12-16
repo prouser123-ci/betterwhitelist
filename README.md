@@ -1,6 +1,7 @@
 # BetterWhitelister
 BetterWhitelist makes whitelisting new players way easier for private servers! This plugin uses <a href="https://github.com/DV8FromTheWorld/JDA">JDA</a> to enable automatic whitelisting via Discord. The command and messages are completly customizable.
 <b>Important:</b> A server restart is required whenever you set a new bot token in the ```config.yml```.
+You can find the latest releases <a href="https://github.com/Dumb-Dog-Diner-Development/betterwhitelister/releases">here</a>
 
 Commands | Permission | Description
 ------------ | ------------- | -------------
