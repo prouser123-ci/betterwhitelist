@@ -9,5 +9,4 @@ commands:
   betterwhitelist:
     usage: /betterwhitelist
     description: Main command
-    aliases: /bw, /bwhitelist, /betterw
-    permission: betterwhitelist.command
+    aliases: bw, bwhitelist, betterw

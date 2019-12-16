@@ -53,7 +53,6 @@ public class BotCommandListener extends ListenerAdapter {
                     if(BetterWhitelist.getPlugin().getConfig().getBoolean("discord.reqRole.enabled")) {
                         if(!(e.getMember().getRoles().contains(e.getGuild().getRoleById(BetterWhitelist.getPlugin().getConfig().getString("discord.reqRole.roleid"))))) {
                             channel.sendMessage(BetterWhitelist.getPlugin().getConfig().getString("discord.reqRole.validFailedMsg")).queue();
-                            return;
                         } else {
                             addUserToWhitelist(username, channel, e.getAuthor().getId());
                         }
