@@ -11,5 +11,5 @@ discord:
   validationCommandName: "minecraft"
   validationSuccess: "You've been whitelisted!"
   validationError: "Something went wrong. Does the provided username exist?"
-  lang:
-    userAlreadyWhitelisted: "You are already whitelisted!"
+lang:
+  userAlreadyWhitelisted: "You are already whitelisted!"
