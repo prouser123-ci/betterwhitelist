@@ -92,7 +92,8 @@ public class BetterWhitelist extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        BetterWhitelist.getJda().shutdown();
+
+        if(getJda() != null) BetterWhitelist.getJda().shutdown();
     }
 
 }

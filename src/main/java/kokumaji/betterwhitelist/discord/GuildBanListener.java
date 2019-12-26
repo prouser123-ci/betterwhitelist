@@ -55,6 +55,7 @@ public class GuildBanListener extends ListenerAdapter {
                         Bukkit.getPlayer(pUUID).kickPlayer("You've been banned on Discord.");
                     }
                     Bukkit.getBanList(BanList.Type.NAME).addBan(p.getName(), "You've been banned from Discord", null, "console");
+                    MySQLRequest.removeEntry(user.getId());
                 }
             }
 

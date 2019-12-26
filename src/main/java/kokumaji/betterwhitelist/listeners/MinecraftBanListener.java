@@ -49,6 +49,7 @@ public class MinecraftBanListener implements Listener {
                         Guild guild = DiscordBot.getJda().getGuildById(guildID);
                         Member member = guild.getMemberById(discordID);
                         guild.ban(member, 0).queue();
+                        MySQLRequest.removeEntry(discordID);
                     }
                 }
             }

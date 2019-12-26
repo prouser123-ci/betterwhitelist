@@ -20,9 +20,6 @@ discord:
     enabled: false
     roleid: "ROLE_ID"
     silent: true
-report:
-  logReports: true
-  reportChannelID: "CHANNEL_ID"
 lang:
   userAlreadyWhitelisted: "You are already whitelisted!"
   validationSuccess: "You've been whitelisted!"

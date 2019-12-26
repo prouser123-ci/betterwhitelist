@@ -25,7 +25,7 @@ public class MySQLRequest {
             Connection con = DriverManager.getConnection("jdbc:mysql://" + sqlHost + ":"+ sqlPort + "/" + sqlDatabase, sqlUsername, sqlPassword);
 
             Statement stmt = con.createStatement();
-            String checkTable = "CREATE TABLE IF NOT EXISTS `minecraft_whitelist` (`discordID` text,`username` text(16));";
+            String checkTable = "CREATE TABLE IF NOT EXISTS `minecraft_whitelist` (`discordID` text,`minecraft_uuid` text);";
             stmt.executeUpdate(checkTable);
 
             con.close();
@@ -46,13 +46,14 @@ public class MySQLRequest {
 
             Statement stmt = con.createStatement();
 
-            ResultSet rs = stmt.executeQuery("select discordID from minecraft_whitelist where minecraft_uuid = " + pUUID);
-            rs.next();
-            String discordID = rs.getString(1);
+            ResultSet rs = stmt.executeQuery("select discordID from minecraft_whitelist where minecraft_uuid = '" + pUUID + "'");
+            while(rs.next()) {
+                String discordID = rs.getString(1);
+                con.close();
 
-            con.close();
-
-            return discordID;
+                return discordID;
+            }
+            return null;
 
         }
 
@@ -61,7 +62,6 @@ public class MySQLRequest {
         }
 
         return null;
-
 
     }
 
@@ -74,12 +74,14 @@ public class MySQLRequest {
             Statement stmt = con.createStatement();
 
             ResultSet rs = stmt.executeQuery("select minecraft_uuid from minecraft_whitelist where discordID = " + pDiscorID);
-            rs.next();
-            String mcUUID = rs.getString(1);
+            while(rs.next()) {
+                String mcUUID = rs.getString(1);
 
-            con.close();
+                con.close();
 
-            return mcUUID;
+                return mcUUID;
+            }
+            return null;
 
         }
 
@@ -110,7 +112,7 @@ public class MySQLRequest {
         }
     }
 
-    public void removeEntry(String discordID) {
+    public static void removeEntry(String discordID) {
         try{
 
             Class.forName("com.mysql.jdbc.Driver");
@@ -118,7 +120,7 @@ public class MySQLRequest {
 
             Statement stmt = con.createStatement();
 
-            stmt.executeUpdate("DELETE FROM `minecraft_whitelist` WHERE `discordID` = " + discordID);
+            stmt.executeUpdate("DELETE FROM `minecraft_whitelist` WHERE `discordID` = '" + discordID + "'");
 
             con.close();
 

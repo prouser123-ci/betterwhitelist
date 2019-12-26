@@ -69,15 +69,16 @@ public class BotCommandListener extends ListenerAdapter {
                     }
                 }
                 else if(BetterWhitelist.getPlugin().getConfig().getString("filetype").contains("sql")) {
-                    if(MySQLRequest.getMinecraftFromDiscordID(e.getAuthor().getId()) == null) {
+                    String pUUID = MySQLRequest.getMinecraftFromDiscordID(e.getAuthor().getId());
+                    if(pUUID == null) {
                         if(BetterWhitelist.getPlugin().getConfig().getBoolean("discord.reqRole.enabled")) {
                             if(!(e.getMember().getRoles().contains(e.getGuild().getRoleById(BetterWhitelist.getPlugin().getConfig().getString("discord.reqRole.roleid"))))) {
                                 channel.sendMessage(BetterWhitelist.getPlugin().getConfig().getString("lang.missingRoleError")).queue();
                             } else {
-                                MySQLRequest.addEntry(Bukkit.getServer().getOfflinePlayer(username).getUniqueId().toString(), e.getAuthor().getId());
+                                addUserToWhitelist(username, channel, e.getGuild().getMember(e.getAuthor()), e.getGuild());
                             }
                         } else {
-                            MySQLRequest.addEntry(Bukkit.getServer().getOfflinePlayer(username).getUniqueId().toString(), e.getAuthor().getId());
+                            addUserToWhitelist(username, channel, e.getGuild().getMember(e.getAuthor()), e.getGuild());
                         }
                     } else {
                         e.getChannel().sendMessage(BetterWhitelist.getPlugin().getConfig().getString("lang.userAlreadyWhitelisted")).queue();
@@ -101,10 +102,10 @@ public class BotCommandListener extends ListenerAdapter {
                         if(!(e.getMember().getRoles().contains(e.getGuild().getRoleById(BetterWhitelist.getPlugin().getConfig().getString("discord.reqRole.roleid"))))) {
                             channel.sendMessage(BetterWhitelist.getPlugin().getConfig().getString("lang.missingRoleError")).queue();
                         } else {
-                            MySQLRequest.addEntry(Bukkit.getServer().getOfflinePlayer(username).getUniqueId().toString(), e.getAuthor().getId());
+                            addUserToWhitelist(username, channel, e.getGuild().getMember(e.getAuthor()), e.getGuild());
                         }
                     } else {
-                        MySQLRequest.addEntry(Bukkit.getServer().getOfflinePlayer(username).getUniqueId().toString(), e.getAuthor().getId());
+                        addUserToWhitelist(username, channel, e.getGuild().getMember(e.getAuthor()), e.getGuild());
                     }
                 }
 
