@@ -1,6 +1,7 @@
 package kokumaji.betterwhitelist.discord;
 
 import kokumaji.betterwhitelist.BetterWhitelist;
+import kokumaji.betterwhitelist.listeners.MySQLRequest;
 import kokumaji.betterwhitelist.listeners.URLRequest;
 import lombok.SneakyThrows;
 import net.dv8tion.jda.api.entities.*;
@@ -21,10 +22,14 @@ public class BotCommandListener extends ListenerAdapter {
     @SneakyThrows
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
+        if (e.getAuthor().isBot()) return;
         Message msg = e.getMessage();
         String[] msgArr = msg.getContentRaw().split(" ");
 
-        if (e.getAuthor().isBot()) return;
+        if(!BetterWhitelist.getPlugin().getConfig().getBoolean("discord.enableAutoWhitelisting")) {
+            e.getChannel().sendMessage(BetterWhitelist.getPlugin().getConfig().getString("lang.whitelistingDisabled")).queue();
+            return;
+        }
 
         String prefix = BetterWhitelist.getPlugin().getConfig().getString("discord.prefix");
         String commandName = BetterWhitelist.getPlugin().getConfig().getString("discord.validationCommandName");
@@ -36,43 +41,73 @@ public class BotCommandListener extends ListenerAdapter {
             String username = msgArr[1];
 
             if(BetterWhitelist.getPlugin().getConfig().getBoolean("oneAccountPerUser")) {
-                Reader reader = Files.newBufferedReader(Paths.get(BetterWhitelist.getPlugin().getDataFolder() + "/userdata.csv"));
-                List<String[]> userData = BetterWhitelist.getUserData(reader);
-                boolean userFound = false;
 
-                for (int i = 0; i < userData.size(); i++) {
-                    String[] current = userData.get(i);
+                if(BetterWhitelist.getPlugin().getConfig().getString("filetype").contains("file")) {
+                    Reader reader = Files.newBufferedReader(Paths.get(BetterWhitelist.getPlugin().getDataFolder() + "/userdata.csv"));
+                    List<String[]> userData = BetterWhitelist.getUserData(reader);
+                    boolean userFound = false;
 
-                    if (current[1].equals(e.getAuthor().getId())) {
-                        userFound = true;
-                        break;
+                    for (String[] current : userData) {
+                        if (current[1].equals(e.getAuthor().getId())) {
+                            userFound = true;
+                            break;
+                        }
                     }
-                }
 
-                if(!userFound) {
-                    if(BetterWhitelist.getPlugin().getConfig().getBoolean("discord.reqRole.enabled")) {
-                        if(!(e.getMember().getRoles().contains(e.getGuild().getRoleById(BetterWhitelist.getPlugin().getConfig().getString("discord.reqRole.roleid"))))) {
-                            channel.sendMessage(BetterWhitelist.getPlugin().getConfig().getString("discord.reqRole.validFailedMsg")).queue();
+                    if(!userFound) {
+                        if(BetterWhitelist.getPlugin().getConfig().getBoolean("discord.reqRole.enabled")) {
+                            if(!(e.getMember().getRoles().contains(e.getGuild().getRoleById(BetterWhitelist.getPlugin().getConfig().getString("discord.reqRole.roleid"))))) {
+                                channel.sendMessage(BetterWhitelist.getPlugin().getConfig().getString("lang.missingRoleError")).queue();
+                            } else {
+                                addUserToWhitelist(username, channel, e.getGuild().getMember(e.getAuthor()), e.getGuild());
+                            }
                         } else {
-                            addUserToWhitelist(username, channel, e.getAuthor().getId());
+                            addUserToWhitelist(username, channel, e.getGuild().getMember(e.getAuthor()), e.getGuild());
                         }
                     } else {
-                        addUserToWhitelist(username, channel, e.getAuthor().getId());
+                        e.getChannel().sendMessage(BetterWhitelist.getPlugin().getConfig().getString("lang.userAlreadyWhitelisted")).queue();
                     }
-                } else {
-                    e.getChannel().sendMessage(BetterWhitelist.getPlugin().getConfig().getString("lang.userAlreadyWhitelisted")).queue();
                 }
-            } else {
-                if(BetterWhitelist.getPlugin().getConfig().getBoolean("discord.reqRole.enabled")) {
-                    if(!(e.getMember().getRoles().contains(e.getGuild().getRoleById(BetterWhitelist.getPlugin().getConfig().getString("discord.reqRole.roleid"))))) {
-                        channel.sendMessage(BetterWhitelist.getPlugin().getConfig().getString("discord.reqRole.validFailedMsg")).queue();
-                        return;
+                else if(BetterWhitelist.getPlugin().getConfig().getString("filetype").contains("sql")) {
+                    if(MySQLRequest.getMinecraftFromDiscordID(e.getAuthor().getId()) == null) {
+                        if(BetterWhitelist.getPlugin().getConfig().getBoolean("discord.reqRole.enabled")) {
+                            if(!(e.getMember().getRoles().contains(e.getGuild().getRoleById(BetterWhitelist.getPlugin().getConfig().getString("discord.reqRole.roleid"))))) {
+                                channel.sendMessage(BetterWhitelist.getPlugin().getConfig().getString("lang.missingRoleError")).queue();
+                            } else {
+                                MySQLRequest.addEntry(Bukkit.getServer().getOfflinePlayer(username).getUniqueId().toString(), e.getAuthor().getId());
+                            }
+                        } else {
+                            MySQLRequest.addEntry(Bukkit.getServer().getOfflinePlayer(username).getUniqueId().toString(), e.getAuthor().getId());
+                        }
                     } else {
-                        addUserToWhitelist(username, channel, e.getAuthor().getId());
+                        e.getChannel().sendMessage(BetterWhitelist.getPlugin().getConfig().getString("lang.userAlreadyWhitelisted")).queue();
                     }
-                } else {
-                    addUserToWhitelist(username, channel, e.getAuthor().getId());
+
                 }
+
+            } else {
+                if(BetterWhitelist.getPlugin().getConfig().getString("filetype").contains("file")) {
+                    if(BetterWhitelist.getPlugin().getConfig().getBoolean("discord.reqRole.enabled")) {
+                        if(!(e.getMember().getRoles().contains(e.getGuild().getRoleById(BetterWhitelist.getPlugin().getConfig().getString("discord.reqRole.roleid"))))) {
+                            channel.sendMessage(BetterWhitelist.getPlugin().getConfig().getString("lang.missingRoleError")).queue();
+                        } else {
+                            addUserToWhitelist(username, channel, e.getGuild().getMember(e.getAuthor()), e.getGuild());
+                        }
+                    } else {
+                        addUserToWhitelist(username, channel, e.getGuild().getMember(e.getAuthor()), e.getGuild());
+                    }
+                } else if(BetterWhitelist.getPlugin().getConfig().getString("filetype").contains("sql")) {
+                    if(BetterWhitelist.getPlugin().getConfig().getBoolean("discord.reqRole.enabled")) {
+                        if(!(e.getMember().getRoles().contains(e.getGuild().getRoleById(BetterWhitelist.getPlugin().getConfig().getString("discord.reqRole.roleid"))))) {
+                            channel.sendMessage(BetterWhitelist.getPlugin().getConfig().getString("lang.missingRoleError")).queue();
+                        } else {
+                            MySQLRequest.addEntry(Bukkit.getServer().getOfflinePlayer(username).getUniqueId().toString(), e.getAuthor().getId());
+                        }
+                    } else {
+                        MySQLRequest.addEntry(Bukkit.getServer().getOfflinePlayer(username).getUniqueId().toString(), e.getAuthor().getId());
+                    }
+                }
+
             }
 
 
@@ -80,9 +115,9 @@ public class BotCommandListener extends ListenerAdapter {
         }
     }
 
-    private void addUserToWhitelist(String pUsername, MessageChannel pChannel, String pAuthorID) {
-        String message = BetterWhitelist.getPlugin().getConfig().getString("discord.validationSuccess");
-        String errmessage = BetterWhitelist.getPlugin().getConfig().getString("discord.validationError");
+    private void addUserToWhitelist(String pUsername, MessageChannel pChannel, Member pMember, Guild pGuild) {
+        String message = BetterWhitelist.getPlugin().getConfig().getString("lang.validationSuccess");
+        String errmessage = BetterWhitelist.getPlugin().getConfig().getString("lang.validationError");
 
         int response = 0;
         try {
@@ -98,7 +133,22 @@ public class BotCommandListener extends ListenerAdapter {
             p.setWhitelisted(true);
 
             pChannel.sendMessage(message).queue();
-            BetterWhitelist.writeToCSV(p.getUniqueId().toString(), pAuthorID, Long.toString(new Date().getTime()));
+            if(BetterWhitelist.getPlugin().getConfig().getString("filetype").contains("file")) {
+                BetterWhitelist.writeToCSV(p.getUniqueId().toString(), pMember.getId(), Long.toString(new Date().getTime()));
+            } else if(BetterWhitelist.getPlugin().getConfig().getString("filetype").contains("sql")) {
+                MySQLRequest.addEntry(p.getUniqueId().toString(), pMember.getId());
+            }
+
+
+            if(BetterWhitelist.getPlugin().getConfig().getBoolean("discord.giveRole.enabled")) {
+                if(!pMember.getRoles().contains(pGuild.getRoleById(BetterWhitelist.getPlugin().getConfig().getString("discord.giveRole.roleid")))) {
+                    pGuild.addRoleToMember(pMember, pGuild.getRoleById(BetterWhitelist.getPlugin().getConfig().getString("discord.giveRole.roleid"))).queue();
+                    if(!BetterWhitelist.getPlugin().getConfig().getBoolean("discord.giveRole.silent")) {
+                        pChannel.sendMessage(BetterWhitelist.getPlugin().getConfig().getString("lang.giveRoleMessage")).queue();
+                    }
+
+                }
+            }
 
         } else {
             pChannel.sendMessage(errmessage).queue();

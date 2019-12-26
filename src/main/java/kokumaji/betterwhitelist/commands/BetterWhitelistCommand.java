@@ -1,6 +1,7 @@
 package kokumaji.betterwhitelist.commands;
 
 import kokumaji.betterwhitelist.BetterWhitelist;
+import kokumaji.betterwhitelist.listeners.MySQLRequest;
 import lombok.SneakyThrows;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -30,35 +31,47 @@ public class BetterWhitelistCommand implements CommandExecutor {
         if (sender instanceof Player) {
             if(sender.hasPermission("betterwhitelist.command")) {
                 if (args.length == 0) {
-                    sender.sendMessage(ChatColor.GOLD + "BetterWhitelist " + BetterWhitelist.getPlugin().getDescription().getVersion() + ChatColor.GREEN + " developed by jaquewolfee");
+                    sender.sendMessage(ChatColor.GOLD + " " + ChatColor.BOLD + "BetterWhitelist " + BetterWhitelist.getPlugin().getDescription().getVersion() + ChatColor.GREEN + " developed by jaquewolfee");
                     sender.sendMessage(ChatColor.GOLD + "/betterwhitelist reload " + ChatColor.GREEN + "- Reloads the config file." + ChatColor.GOLD + "\n/betterwhitelist whois <Minecraft User> " + ChatColor.GREEN + "- Displays information about the connected Discord account.");
-                } else if (args[0].equals("help")) {
+                } else if (args[0].equalsIgnoreCase("help")) {
                     sender.sendMessage(ChatColor.GOLD + "/betterwhitelist reload " + ChatColor.GREEN + "- Reloads the config file." + ChatColor.GOLD + "\n/betterwhitelist whois <Minecraft User> " + ChatColor.GREEN + "- Displays information about the connected Discord account.");
-                } else if (args[0].equals("whois")) {
+                } else if (args[0].equalsIgnoreCase("whois")) {
                     if(sender.hasPermission("betterwhitelist.command.whois")) {
-                        Reader reader = Files.newBufferedReader(Paths.get(BetterWhitelist.getPlugin().getDataFolder() + "/userdata.csv"));
-                        List<String[]> userData = BetterWhitelist.getUserData(reader);
-                        boolean userFound = false;
+                        if(BetterWhitelist.getPlugin().getConfig().getString("filetype").contains("file")) {
+                            Reader reader = Files.newBufferedReader(Paths.get(BetterWhitelist.getPlugin().getDataFolder() + "/userdata.csv"));
+                            List<String[]> userData = BetterWhitelist.getUserData(reader);
+                            boolean userFound = false;
 
-                        for (int i = 0; i < userData.size(); i++) {
-                            String[] current = userData.get(i);
+                            for (int i = 0; i < userData.size(); i++) {
+                                String[] current = userData.get(i);
+                                String pUUID = Bukkit.getServer().getOfflinePlayer(args[1]).getUniqueId().toString();
+                                if (current[0].equals(pUUID)) {
+                                    Guild guild = BetterWhitelist.getJda().getGuildById(BetterWhitelist.getPlugin().getConfig().getString("discord.guildid"));
+                                    Member member = guild.getMemberById(current[1]);
+                                    userFound = true;
+                                    sender.sendMessage(ChatColor.DARK_GREEN + "========================================\n" + ChatColor.GREEN + "Results of " + ChatColor.GOLD + Bukkit.getServer().getOfflinePlayer(pUUID).getName() + ChatColor.GREEN + "\nDiscord Username " + ChatColor.GOLD + member.getUser().getAsTag() + ChatColor.GREEN + "\nAccount created on " + ChatColor.GOLD + member.getUser().getTimeCreated() + ChatColor.GREEN + "\nUser ID " + ChatColor.GOLD + member.getUser().getId() + ChatColor.GREEN + "\nHighest Role " + ChatColor.GOLD + member.getRoles().get(0) + ChatColor.DARK_GREEN + "========================================");
+                                    break;
+                                }
+                            }
+
+                            if(!userFound) {
+                                sender.sendMessage(ChatColor.RED + "Could not find user.");
+                            }
+                        } else if(BetterWhitelist.getPlugin().getConfig().getString("filetype").contains("sql")) {
                             String pUUID = Bukkit.getServer().getOfflinePlayer(args[1]).getUniqueId().toString();
-                            if (current[0].equals(pUUID)) {
+                            if(MySQLRequest.getDiscordIDFromMinecraft(pUUID) != null) {
                                 Guild guild = BetterWhitelist.getJda().getGuildById(BetterWhitelist.getPlugin().getConfig().getString("discord.guildid"));
-                                Member member = guild.getMemberById(current[1]);
-                                userFound = true;
+                                Member member = guild.getMemberById(MySQLRequest.getDiscordIDFromMinecraft(pUUID));
                                 sender.sendMessage(ChatColor.DARK_GREEN + "========================================\n" + ChatColor.GREEN + "Results of " + ChatColor.GOLD + Bukkit.getServer().getOfflinePlayer(pUUID).getName() + ChatColor.GREEN + "\nDiscord Username " + ChatColor.GOLD + member.getUser().getAsTag() + ChatColor.GREEN + "\nAccount created on " + ChatColor.GOLD + member.getUser().getTimeCreated() + ChatColor.GREEN + "\nUser ID " + ChatColor.GOLD + member.getUser().getId() + ChatColor.GREEN + "\nHighest Role " + ChatColor.GOLD + member.getRoles().get(0) + ChatColor.DARK_GREEN + "========================================");
-                                break;
+                            } else {
+                                sender.sendMessage(ChatColor.RED + "Could not find user");
                             }
                         }
 
-                        if(!userFound) {
-                            sender.sendMessage(ChatColor.RED + "Could not find user.");
-                        }
                     } else {
                         sender.sendMessage(ChatColor.RED + "You don't have the required permissions to do this!");
                     }
-                } else if (args[0].equals("reload")) {
+                } else if (args[0].equalsIgnoreCase("reload")) {
                     if(sender.hasPermission("betterwhitelist.command.reload")) {
                         BetterWhitelist.getPlugin().reloadConfig();
                         sender.sendMessage(ChatColor.GREEN + "Config reloaded!");
@@ -66,6 +79,22 @@ public class BetterWhitelistCommand implements CommandExecutor {
                         sender.sendMessage(ChatColor.RED + "You don't have the required permissions to do this!");
                     }
 
+                }  else if(args[0].equalsIgnoreCase("enable")) {
+                    if(!BetterWhitelist.getPlugin().getConfig().getBoolean("discord.enableAutoWhitelisting")) {
+                        sender.sendMessage(ChatColor.GREEN + "Auto-Whitelisting is now enabled!");
+                        BetterWhitelist.getPlugin().getConfig().set("discord.enableAutoWhitelisting", true);
+                        BetterWhitelist.getPlugin().saveConfig();
+                    } else {
+                        sender.sendMessage(ChatColor.RED + "Auto-Whitelisting is already enabled!");
+                    }
+                } else if(args[0].equalsIgnoreCase("disable")) {
+                    if(BetterWhitelist.getPlugin().getConfig().getBoolean("discord.enableAutoWhitelisting")) {
+                        sender.sendMessage(ChatColor.GREEN + "Auto-Whitelisting is now disabled!\n" + ChatColor.DARK_RED + "WARNING: " + ChatColor.RED + "Manually added users won't be affected by synced banning!!!");
+                        BetterWhitelist.getPlugin().getConfig().set("discord.enableAutoWhitelisting", false);
+                        BetterWhitelist.getPlugin().saveConfig();
+                    } else {
+                        sender.sendMessage(ChatColor.RED + "Auto-Whitelisting is already disabled!");
+                    }
                 }
             } else {
                 sender.sendMessage(ChatColor.RED + "You don't have the required permissions to do this!");

@@ -10,3 +10,6 @@ commands:
     usage: /betterwhitelist
     description: Main command
     aliases: bw, bwhitelist, betterw
+  report:
+    usage: /report <Player> <Reason>
+    description: Report a player

@@ -6,13 +6,13 @@ import kokumaji.betterwhitelist.commands.BetterWhitelistCommand;
 import kokumaji.betterwhitelist.discord.BotCommandListener;
 import kokumaji.betterwhitelist.discord.GuildBanListener;
 import kokumaji.betterwhitelist.listeners.MinecraftBanListener;
+import kokumaji.betterwhitelist.listeners.MySQLRequest;
 import lombok.Getter;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -76,20 +76,23 @@ public class BetterWhitelist extends JavaPlugin {
         initBot();
         this.getCommand("betterwhitelist").setExecutor(new BetterWhitelistCommand());
         Bukkit.getPluginManager().registerEvents(new MinecraftBanListener(), this);
-
-        File userDataFile = new File(getPlugin().getDataFolder() + "/userdata.csv");
-        if (!userDataFile.exists()) {
-            try {
-                userDataFile.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
+        if(getConfig().getString("filetype").contains("sql")) {
+            MySQLRequest.checkTable();
+        } else if(getConfig().getString("filetype").contains("file") || getConfig().getString("filetype").contains("csv")) {
+            File userDataFile = new File(getPlugin().getDataFolder() + "/userdata.csv");
+            if (!userDataFile.exists()) {
+                try {
+                    userDataFile.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
-
     }
 
     @Override
     public void onDisable() {
+        BetterWhitelist.getJda().shutdown();
     }
 
 }

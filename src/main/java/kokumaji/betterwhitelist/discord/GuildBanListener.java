@@ -1,6 +1,7 @@
 package kokumaji.betterwhitelist.discord;
 
 import kokumaji.betterwhitelist.BetterWhitelist;
+import kokumaji.betterwhitelist.listeners.MySQLRequest;
 import lombok.SneakyThrows;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
@@ -14,6 +15,7 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 public class GuildBanListener extends ListenerAdapter {
 
@@ -26,24 +28,36 @@ public class GuildBanListener extends ListenerAdapter {
 
         if (banSyncEnabled) {
             User user = e.getUser();
-            Reader reader = null;
-            List<String[]> userData = null;
+            if(BetterWhitelist.getPlugin().getConfig().getString("filetype").contains("file")) {
+                Reader reader = null;
+                List<String[]> userData = null;
 
-            reader = Files.newBufferedReader(Paths.get(BetterWhitelist.getPlugin().getDataFolder() + "/userdata.csv"));
-            userData = BetterWhitelist.getUserData(reader);
+                reader = Files.newBufferedReader(Paths.get(BetterWhitelist.getPlugin().getDataFolder() + "/userdata.csv"));
+                userData = BetterWhitelist.getUserData(reader);
 
-            for (int i = 0; i < userData.size(); i++) {
-                String[] current = userData.get(i);
+                for (int i = 0; i < userData.size(); i++) {
+                    String[] current = userData.get(i);
 
-                if (current[1].equals(user.getId())) {
+                    if (current[1].equals(user.getId())) {
 
-                    OfflinePlayer player = Bukkit.getOfflinePlayer(current[0]);
-                    Bukkit.getPlayer(player.getUniqueId()).kickPlayer("You've been banned on Discord.");
-                    Bukkit.getBanList(BanList.Type.NAME).addBan(player.getName(), "You've been banned from Discord", null, "console");
-                    break;
+                        OfflinePlayer player = Bukkit.getOfflinePlayer(current[0]);
+                        Bukkit.getPlayer(player.getUniqueId()).kickPlayer("You've been banned on Discord.");
+                        Bukkit.getBanList(BanList.Type.NAME).addBan(player.getName(), "You've been banned from Discord", null, "console");
+                        break;
+                    }
+
                 }
-
+            } else if(BetterWhitelist.getPlugin().getConfig().getString("filetype").contains("sql")) {
+                UUID pUUID = UUID.fromString(MySQLRequest.getMinecraftFromDiscordID(user.getId()));
+                if(pUUID != null) {
+                    OfflinePlayer p = Bukkit.getOfflinePlayer(pUUID);
+                    if(p.isOnline()) {
+                        Bukkit.getPlayer(pUUID).kickPlayer("You've been banned on Discord.");
+                    }
+                    Bukkit.getBanList(BanList.Type.NAME).addBan(p.getName(), "You've been banned from Discord", null, "console");
+                }
             }
+
         }
 
     }
