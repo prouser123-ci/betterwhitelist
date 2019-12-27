@@ -15,6 +15,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.Reader;
 import java.nio.file.Files;
@@ -62,7 +63,11 @@ public class BetterWhitelistCommand implements CommandExecutor {
                             if(MySQLRequest.getDiscordIDFromMinecraft(pUUID) != null) {
                                 Guild guild = BetterWhitelist.getJda().getGuildById(BetterWhitelist.getPlugin().getConfig().getString("discord.guildid"));
                                 Member member = guild.getMemberById(MySQLRequest.getDiscordIDFromMinecraft(pUUID));
-                                sender.sendMessage(ChatColor.DARK_GREEN + "========================================\n" + ChatColor.GREEN + "Results of " + ChatColor.GOLD + Bukkit.getServer().getOfflinePlayer(pUUID).getName() + ChatColor.GREEN + "\nDiscord Username " + ChatColor.GOLD + member.getUser().getAsTag() + ChatColor.GREEN + "\nAccount created on " + ChatColor.GOLD + member.getUser().getTimeCreated() + ChatColor.GREEN + "\nUser ID " + ChatColor.GOLD + member.getUser().getId() + ChatColor.GREEN + "\nHighest Role " + ChatColor.GOLD + member.getRoles().get(0) + ChatColor.DARK_GREEN + "========================================");
+                                String highestRole = "none";
+                                if(!member.getRoles().isEmpty()) {
+                                    highestRole = member.getRoles().get(0).getName();
+                                }
+                                sender.sendMessage(ChatColor.DARK_GREEN + "========================================\n" + ChatColor.GREEN + "Results of " + ChatColor.GOLD + Bukkit.getServer().getOfflinePlayer(pUUID).getName() + ChatColor.GREEN + "\nDiscord Username " + ChatColor.GOLD + member.getUser().getAsTag() + ChatColor.GREEN + "\nAccount created on " + ChatColor.GOLD + member.getUser().getTimeCreated() + ChatColor.GREEN + "\nUser ID " + ChatColor.GOLD + member.getUser().getId() + ChatColor.GREEN + "\nHighest Role " + ChatColor.GOLD + highestRole + ChatColor.DARK_GREEN + "========================================");
                             } else {
                                 sender.sendMessage(ChatColor.RED + "Could not find user");
                             }

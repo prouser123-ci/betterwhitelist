@@ -25,7 +25,7 @@ public class MySQLRequest {
             Connection con = DriverManager.getConnection("jdbc:mysql://" + sqlHost + ":"+ sqlPort + "/" + sqlDatabase, sqlUsername, sqlPassword);
 
             Statement stmt = con.createStatement();
-            String checkTable = "CREATE TABLE IF NOT EXISTS `minecraft_whitelist` (`discordID` text,`minecraft_uuid` text);";
+            String checkTable = "CREATE TABLE IF NOT EXISTS `minecraft_whitelist` (`discordID` VARCHAR(20),`minecraft_uuid` VARCHAR(36));";
             stmt.executeUpdate(checkTable);
 
             con.close();
