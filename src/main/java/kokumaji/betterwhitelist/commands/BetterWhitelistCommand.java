@@ -31,7 +31,6 @@ public class BetterWhitelistCommand implements CommandExecutor {
     @SneakyThrows
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player) {
             if(sender.hasPermission("betterwhitelist.command")) {
                 if (args.length == 0) {
                     sender.sendMessage(ChatColor.GOLD + " " + ChatColor.BOLD + "BetterWhitelist " + BetterWhitelist.getPlugin().getDescription().getVersion() + ChatColor.GREEN + " developed by jaquewolfee");
@@ -55,7 +54,10 @@ public class BetterWhitelistCommand implements CommandExecutor {
                             if(p.isWhitelisted()) {
                                 p.setWhitelisted(false);
                                 MySQLRequest.removeEntry(MySQLRequest.getDiscordIDFromMinecraft(p.getUniqueId().toString()));
-                                sender.sendMessage(ChatColor.GREEN + "Removed" + p.getName() + " from the whitelist!");
+                                sender.sendMessage(ChatColor.GREEN + "Removed " + p.getName() + " from the whitelist!");
+                                if(p.isOnline()) {
+                                    Bukkit.getPlayer(p.getUniqueId()).kickPlayer("You've been removed from the whitelist");
+                                }
                             } else {
                                 sender.sendMessage(ChatColor.RED + "This player is not whitelisted!");
                             }
@@ -63,6 +65,18 @@ public class BetterWhitelistCommand implements CommandExecutor {
                             sender.sendMessage(ChatColor.RED + "This player does not exist!");
                         }
                     }
+                } else if(args[0].equalsIgnoreCase("list")) {
+                    int count = 0;
+                    String[] whitelistedPlayers = new String[Bukkit.getWhitelistedPlayers().size()];
+                    for(OfflinePlayer pW : Bukkit.getWhitelistedPlayers()) {
+                        if(count != Bukkit.getWhitelistedPlayers().size()) {
+                            whitelistedPlayers[count++] = pW.getName();
+                        } else {
+                            break;
+                        }
+                    }
+
+                    sender.sendMessage("There are currently " + count + " players whitelisted: " + String.join(", ", whitelistedPlayers));
                 } else if (args[0].equalsIgnoreCase("whois")) {
                     if(sender.hasPermission("betterwhitelist.command.whois")) {
                         if(BetterWhitelist.getPlugin().getConfig().getString("filetype").contains("file")) {
@@ -131,8 +145,6 @@ public class BetterWhitelistCommand implements CommandExecutor {
             } else {
                 sender.sendMessage(ChatColor.RED + "You don't have the required permissions to do this!");
             }
-
-        }
 
         return true;
     }
