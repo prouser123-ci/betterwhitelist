@@ -2,6 +2,7 @@ package kokumaji.betterwhitelist.commands;
 
 import kokumaji.betterwhitelist.BetterWhitelist;
 import kokumaji.betterwhitelist.listeners.MySQLRequest;
+import kokumaji.betterwhitelist.listeners.URLRequest;
 import lombok.SneakyThrows;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -21,6 +22,7 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 public class BetterWhitelistCommand implements CommandExecutor {
 
@@ -36,6 +38,31 @@ public class BetterWhitelistCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.GOLD + "/betterwhitelist reload " + ChatColor.GREEN + "- Reloads the config file." + ChatColor.GOLD + "\n/betterwhitelist whois <Minecraft User> " + ChatColor.GREEN + "- Displays information about the connected Discord account.");
                 } else if (args[0].equalsIgnoreCase("help")) {
                     sender.sendMessage(ChatColor.GOLD + "/betterwhitelist reload " + ChatColor.GREEN + "- Reloads the config file." + ChatColor.GOLD + "\n/betterwhitelist whois <Minecraft User> " + ChatColor.GREEN + "- Displays information about the connected Discord account.");
+                } else if(args[0].equalsIgnoreCase("remove")) {
+                    if(args[1] == null) {
+                        sender.sendMessage(ChatColor.RED + "Please specify a player!");
+                    } else {
+                        int response = 0;
+                        try {
+                            response = URLRequest.checkUsername(args[1]);
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+
+                        if (response == 200 && response != 204) {
+                            OfflinePlayer p = Bukkit.getOfflinePlayer(args[1]);
+
+                            if(p.isWhitelisted()) {
+                                p.setWhitelisted(false);
+                                MySQLRequest.removeEntry(MySQLRequest.getDiscordIDFromMinecraft(p.getUniqueId().toString()));
+                                sender.sendMessage(ChatColor.GREEN + "Removed" + p.getName() + " from the whitelist!");
+                            } else {
+                                sender.sendMessage(ChatColor.RED + "This player is not whitelisted!");
+                            }
+                        } else {
+                            sender.sendMessage(ChatColor.RED + "This player does not exist!");
+                        }
+                    }
                 } else if (args[0].equalsIgnoreCase("whois")) {
                     if(sender.hasPermission("betterwhitelist.command.whois")) {
                         if(BetterWhitelist.getPlugin().getConfig().getString("filetype").contains("file")) {

@@ -26,10 +26,6 @@ public class BotCommandListener extends ListenerAdapter {
         Message msg = e.getMessage();
         String[] msgArr = msg.getContentRaw().split(" ");
 
-        if(!BetterWhitelist.getPlugin().getConfig().getBoolean("discord.enableAutoWhitelisting")) {
-            e.getChannel().sendMessage(BetterWhitelist.getPlugin().getConfig().getString("lang.whitelistingDisabled")).queue();
-            return;
-        }
 
         String prefix = BetterWhitelist.getPlugin().getConfig().getString("discord.prefix");
         String commandName = BetterWhitelist.getPlugin().getConfig().getString("discord.validationCommandName");
@@ -37,6 +33,12 @@ public class BotCommandListener extends ListenerAdapter {
         if (e.isFromType(ChannelType.PRIVATE)) return;
 
         if (msgArr[0].equalsIgnoreCase(prefix + commandName)) {
+
+            if(!BetterWhitelist.getPlugin().getConfig().getBoolean("discord.enableAutoWhitelisting")) {
+                e.getChannel().sendMessage(BetterWhitelist.getPlugin().getConfig().getString("lang.whitelistingDisabled")).queue();
+                return;
+            }
+
             MessageChannel channel = e.getChannel();
             String username = msgArr[1];
 
