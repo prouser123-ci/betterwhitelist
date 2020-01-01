@@ -5,6 +5,7 @@ import com.opencsv.CSVWriter;
 import kokumaji.betterwhitelist.commands.BetterWhitelistCommand;
 import kokumaji.betterwhitelist.discord.BotCommandListener;
 import kokumaji.betterwhitelist.discord.GuildBanListener;
+import kokumaji.betterwhitelist.discord.GuildLeaveListener;
 import kokumaji.betterwhitelist.listeners.MinecraftBanListener;
 import kokumaji.betterwhitelist.listeners.MySQLRequest;
 import lombok.Getter;
@@ -40,6 +41,7 @@ public class BetterWhitelist extends JavaPlugin {
             Jda = new JDABuilder(AccountType.BOT).setToken(discordToken).build().awaitReady();
             Jda.addEventListener(new BotCommandListener());
             Jda.addEventListener(new GuildBanListener());
+            Jda.addEventListener(new GuildLeaveListener());
         } catch (LoginException | InterruptedException ignored) {
             System.out.println("[BetterWhitelist] Could not initialize bot. Please change the discord.token entry in the config file.");
         }

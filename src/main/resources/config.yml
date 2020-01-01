@@ -13,6 +13,7 @@ discord:
   guildid: "GUILD_ID"
   prefix: "!"
   validationCommandName: "minecraft"
+  pardonCommmandName: "pardon"
   reqRole:
     enabled: false
     roleid: "ROLE_ID"

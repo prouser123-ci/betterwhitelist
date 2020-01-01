@@ -1,6 +1,7 @@
 package kokumaji.betterwhitelist.commands;
 
 import kokumaji.betterwhitelist.BetterWhitelist;
+import kokumaji.betterwhitelist.discord.DiscordBot;
 import kokumaji.betterwhitelist.listeners.MySQLRequest;
 import kokumaji.betterwhitelist.listeners.URLRequest;
 import lombok.SneakyThrows;
@@ -53,7 +54,15 @@ public class BetterWhitelistCommand implements CommandExecutor {
 
                             if(p.isWhitelisted()) {
                                 p.setWhitelisted(false);
-                                MySQLRequest.removeEntry(MySQLRequest.getDiscordIDFromMinecraft(p.getUniqueId().toString()));
+                                String memberID = MySQLRequest.getDiscordIDFromMinecraft(p.getUniqueId().toString());
+                                MySQLRequest.removeEntry(memberID);
+
+                                Guild g = BetterWhitelist.getJda().getGuildById(BetterWhitelist.getPlugin().getConfig().getString("discord.guildid"));
+                                Member m = g.getMemberById(memberID);
+
+                                if(m.getRoles().contains(g.getRoleById(Long.parseLong(BetterWhitelist.getPlugin().getConfig().getString("discord.giveRole.roleid"))))) {
+                                    g.removeRoleFromMember(m, g.getRoleById(Long.parseLong(BetterWhitelist.getPlugin().getConfig().getString("discord.giveRole.roleid")))).queue();
+                                }
                                 sender.sendMessage(ChatColor.GREEN + "Removed " + p.getName() + " from the whitelist!");
                                 if(p.isOnline()) {
                                     Bukkit.getPlayer(p.getUniqueId()).kickPlayer("You've been removed from the whitelist");

@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public class BotCommandListener extends ListenerAdapter {
 
@@ -29,8 +30,32 @@ public class BotCommandListener extends ListenerAdapter {
 
         String prefix = BetterWhitelist.getPlugin().getConfig().getString("discord.prefix");
         String commandName = BetterWhitelist.getPlugin().getConfig().getString("discord.validationCommandName");
+        String pardonCommand = BetterWhitelist.getPlugin().getConfig().getString("discord.pardonCommandName");
 
         if (e.isFromType(ChannelType.PRIVATE)) return;
+
+        if(msgArr[0].equalsIgnoreCase(prefix + pardonCommand)) {
+            if(!BetterWhitelist.getPlugin().getConfig().getBoolean("discord.enableAutoWhitelisting")) {
+                e.getChannel().sendMessage(BetterWhitelist.getPlugin().getConfig().getString("lang.whitelistingDisabled")).queue();
+                return;
+            }
+
+            MessageChannel channel = e.getChannel();
+
+            String pUUID = MySQLRequest.getMinecraftFromDiscordID(e.getAuthor().getId());
+            if(pUUID != null) {
+                OfflinePlayer p = Bukkit.getOfflinePlayer(UUID.fromString(pUUID));
+                p.setWhitelisted(false);
+                MySQLRequest.removeEntry(e.getAuthor().getId());
+                channel.sendMessage("Entry has been removed!").queue();
+
+                if(e.getMember().getRoles().contains(e.getGuild().getRoleById(Long.parseLong(BetterWhitelist.getPlugin().getConfig().getString("discord.giveRole.roleid"))))) {
+                    e.getGuild().removeRoleFromMember(e.getMember(), e.getGuild().getRoleById(Long.parseLong(BetterWhitelist.getPlugin().getConfig().getString("discord.giveRole.roleid")))).queue();
+                }
+            } else {
+                channel.sendMessage("There is no Minecraft account connected to your Discord account!").queue();
+            }
+        }
 
         if (msgArr[0].equalsIgnoreCase(prefix + commandName)) {
 
