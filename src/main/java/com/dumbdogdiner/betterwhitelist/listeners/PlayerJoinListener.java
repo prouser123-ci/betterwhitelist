@@ -16,12 +16,15 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class PlayerJoinListener implements Listener {
+    String guildID = BetterWhitelist.getPlugin().getConfig().getString("discord.guildid");
+    private boolean banSyncEnabled = BetterWhitelist.getPlugin().getConfig().getBoolean("enableBanSync");
 
     @EventHandler
     public void onPlayerBan(PlayerQuitEvent e) throws IOException {
         if (!banSyncEnabled) {
             return;
         }
+
         Player p = e.getPlayer();
 
         if (!p.isBanned()) {

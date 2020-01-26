@@ -10,21 +10,15 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-
-import javax.annotation.Nullable;
 
 import com.dumbdogdiner.betterwhitelist.BetterWhitelist;
 import com.dumbdogdiner.betterwhitelist.listeners.MySQLRequest;
 import com.dumbdogdiner.betterwhitelist.listeners.URLRequest;
 
-import java.io.File;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 
 public class BetterWhitelistCommand implements CommandExecutor {
 

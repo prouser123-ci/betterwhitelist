@@ -34,10 +34,6 @@ public class BotCommandListener extends ListenerAdapter {
         String commandName = BetterWhitelist.getPlugin().getConfig().getString("discord.validationCommandName");
         String pardonCommand = BetterWhitelist.getPlugin().getConfig().getString("discord.pardonCommandName");
 
-        if (args[0].equalsIgnoreCase(commandName)) {
-        } else if (args[0].equalsIgnoreCase(pardonCommand)) {
-        }
-
         if (args[0].equalsIgnoreCase(pardonCommand)) {
             if (!BetterWhitelist.getPlugin().getConfig().getBoolean("discord.enableAutoWhitelisting")) {
                 e.getChannel()

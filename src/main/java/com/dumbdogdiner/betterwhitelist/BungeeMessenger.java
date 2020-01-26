@@ -87,6 +87,10 @@ public class BungeeMessenger implements PluginMessageListener {
      * @param uuidToBan
      */
     public void handleBanRequest(String uuidToBan) {
+        if (banSyncEnabled == false) {
+            return;
+        }
+
         Bukkit.getLogger().info("Request to ban user '" + uuidToBan + "' from Bungee.");
 
         Player onlinePlayer = Bukkit.getPlayer(UUID.fromString(uuidToBan));
