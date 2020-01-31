@@ -1,8 +1,6 @@
-package com.dumbdogdiner.betterwhitelist.commands;
+package com.dumbdogdiner.betterwhitelist_client.commands;
 
-import lombok.SneakyThrows;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
+import com.dumbdogdiner.betterwhitelist_client.BetterWhitelistClientPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -11,20 +9,14 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import com.dumbdogdiner.betterwhitelist.BetterWhitelist;
-import com.dumbdogdiner.betterwhitelist.listeners.MySQLRequest;
-import com.dumbdogdiner.betterwhitelist.listeners.URLRequest;
-
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
 public class BetterWhitelistCommand implements CommandExecutor {
+    private FileConfiguration plConf = BetterWhitelistClientPlugin.getPlugin().getConfig();
 
-    FileConfiguration plConf = BetterWhitelist.getPlugin().getConfig();
-
-    @SneakyThrows
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender.hasPermission("betterwhitelist.command")) {

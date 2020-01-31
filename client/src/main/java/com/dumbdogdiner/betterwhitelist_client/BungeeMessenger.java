@@ -1,44 +1,51 @@
-package com.dumbdogdiner.betterwhitelist;
+package com.dumbdogdiner.betterwhitelist_client;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.UUID;
-
-import com.dumbdogdiner.betterwhitelist.BetterWhitelist;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-
-import org.bukkit.Bukkit;
 import org.bukkit.BanList.Type;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
+// I know * imports are bad practice, but intellij is being insistent.
+import java.io.*;
+import java.util.UUID;
+
 public class BungeeMessenger implements PluginMessageListener {
-    public BetterWhitelist plugin;
+    public boolean banSyncEnabled = BetterWhitelistClientPlugin.getPlugin().getConfig().getBoolean("enableBanSync");
 
-    private boolean banSyncEnabled = BetterWhitelist.getPlugin().getConfig().getBoolean("enableBanSync");
-
-    public BungeeMessenger(BetterWhitelist plugin) {
-        this.plugin = plugin;
-    }
-
-    public void banPlayerGlobal(Player player, UUID target) throws IOException {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(stream);
-
+    /**
+     * Request for a player to be banned globally.
+     * @param receiver
+     * @param target
+     * @throws IOException
+     */
+    public void addGlobalBan(Player receiver, UUID target) {
         Bukkit.getLogger().info("Requesting player UUID '" + target.toString() + "' be banned globally...");
-
-        out.writeUTF("Forward");
-        out.writeUTF("ONLINE");
-        out.writeUTF("Ban");
-        out.writeUTF(target.toString());
-
-        player.sendPluginMessage(plugin, "BungeeCord", stream.toByteArray());
+        sendEvent(receiver, "Ban", target.toString());
     }
+
+    /**
+     * Requests the Bungee server to remove a global ban.
+     * @param receiver
+     * @param target
+     */
+    public void removeGlobalBan(Player receiver, UUID target) {
+        Bukkit.getLogger().info("Requesting player UUID '" + target.toString() + "' be pardoned globally...");
+        sendEvent(receiver, "Pardon", target.toString());
+    }
+
+    /**
+     * Asks Bungee whether or not the target UUID has been banned.
+     * @param receiver
+     * @param target
+     */
+    public void checkGlobalBan(Player receiver, UUID target) {
+        Bukkit.getLogger().info("Bunge => Is '" + target.toString() + "' banned?");
+    }
+
+
 
     @Override
     public void onPluginMessageReceived(String channel, Player receiver, byte[] message) {
@@ -96,7 +103,7 @@ public class BungeeMessenger implements PluginMessageListener {
         Player onlinePlayer = Bukkit.getPlayer(UUID.fromString(uuidToBan));
 
         // If player was found
-        if (!onlinePlayer.equals(null) && !onlinePlayer.isBanned()) {
+        if (onlinePlayer.isOnline() && !onlinePlayer.isBanned()) {
             onlinePlayer.kickPlayer("Banned from server.");
             Bukkit.getBanList(Type.NAME).addBan(onlinePlayer.getName(), "Banned from server.", null, null);
         }
@@ -134,6 +141,6 @@ public class BungeeMessenger implements PluginMessageListener {
             out.writeUTF(arg);
         }
 
-        receiver.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+        receiver.sendPluginMessage(BetterWhitelistClientPlugin.getPlugin(), "BungeeCord", out.toByteArray());
     }
 }
