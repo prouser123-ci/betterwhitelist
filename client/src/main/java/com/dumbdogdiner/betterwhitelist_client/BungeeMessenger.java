@@ -14,6 +14,7 @@ import java.util.UUID;
 
 public class BungeeMessenger implements PluginMessageListener {
     public boolean banSyncEnabled = BetterWhitelistClientPlugin.getPlugin().getConfig().getBoolean("enableBanSync");
+    public UUID lastestBan;
 
     /**
      * Request for a player to be banned globally.
@@ -106,6 +107,7 @@ public class BungeeMessenger implements PluginMessageListener {
         if (onlinePlayer.isOnline() && !onlinePlayer.isBanned()) {
             onlinePlayer.kickPlayer("Banned from server.");
             Bukkit.getBanList(Type.NAME).addBan(onlinePlayer.getName(), "Banned from server.", null, null);
+            lastestBan = UUID.fromString(uuidToBan);
         }
     }
 

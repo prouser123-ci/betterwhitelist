@@ -8,7 +8,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-
+/**
+ * Listener that syncs local server bans to all other servers.
+ */
 public class BanListener implements Listener {
     private boolean banSyncEnabled = BetterWhitelistClientPlugin.getPlugin().getConfig().getBoolean("enableBanSync");
     private BungeeMessenger bungee = BetterWhitelistClientPlugin.bungee;
@@ -21,7 +23,7 @@ public class BanListener implements Listener {
 
         Player target = e.getPlayer();
 
-        if (!target.isBanned()) {
+        if (target.isBanned()) {
             return;
         }
 
@@ -33,7 +35,7 @@ public class BanListener implements Listener {
             receiver = Bukkit.getOnlinePlayers().iterator().next();
         }
 
-        if (receiver.equals(null)) {
+        if (!receiver.isOnline()) {
             Bukkit.getLogger().info("No players are online - cannot inform Bungee of ban. Caching until somebody joins...");
             // TODO: Add cache.
             return;

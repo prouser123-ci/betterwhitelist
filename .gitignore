@@ -81,8 +81,9 @@ local.properties
 .worksheet
 
 /src/test
-/betterwhitelister.iml
+/betterwhitelist.iml
 /.idea
 target/
 .gradle/
 gradle/
+build/

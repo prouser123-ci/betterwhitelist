@@ -1,4 +1,4 @@
-package com.dumbdogdiner.betterwhitelist_client;
+package com.dumbdogdiner.betterwhitelist_client.utils;
 
 import java.net.HttpURLConnection;
 import java.net.URL;

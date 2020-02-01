@@ -1,10 +1,10 @@
-# BetterWhitelister
+# BetterWhitelist
 
 Fork of [this](https://github.com/Dumb-Dog-Diner-Development/betterwhitelister) plugin by Jaquewolfee, rewritten to be compatible with BungeeCord.
 
 ## Overview
 
-BetterWhitelister is a Bungee-compatible plugin for managing global bans shared between a BungeeCord network and any attached Discord servers.
+BetterWhitelist is a Bungee-compatible plugin for managing global bans shared between a BungeeCord network and any attached Discord servers.
 
 **Everything is currently broken!!!** I'm working on moving the old code into two separate plugins:
 
