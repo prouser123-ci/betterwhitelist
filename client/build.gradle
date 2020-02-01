@@ -1,12 +1,14 @@
 plugins {
     id 'java'
     id 'idea'
+    id 'maven'
 }
 
-group 'com.dumbdogdiner.betterwhitelist_client'
+group 'com.dumbdogdiner'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 
 repositories {
     mavenCentral()
@@ -28,4 +30,8 @@ dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.14.4-R0.1-SNAPSHOT'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+processResources {
+    expand project.properties
 }

@@ -9,28 +9,34 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BetterWhitelistClientPlugin extends JavaPlugin {
-    public static BungeeMessenger bungee = new BungeeMessenger();
+    public static BungeeMessenger bungee;
+
+    private static BetterWhitelistClientPlugin instance;
 
     /**
      * Returns a static reference to the plugin.
      * @return
      */
-    public static Plugin getPlugin() {
-        return getPlugin(BetterWhitelistClientPlugin.class);
+    public static BetterWhitelistClientPlugin getPlugin() {
+        return instance;
     }
 
     @Override
     public void onEnable() {
-        this.saveDefaultConfig();
-        this.getCommand("betterwhitelist").setExecutor(new BetterWhitelistCommand());
+        instance = this;
+
+        saveDefaultConfig();
+        getCommand("betterwhitelist").setExecutor(new BetterWhitelistCommand());
 
         // Register event listeners.
-        Bukkit.getPluginManager().registerEvents(new BanListener(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
+        Bukkit.getPluginManager().registerEvents(new BanListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(this), this);
 
         // Register proxy messenger.
+        bungee = new BungeeMessenger(this);
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", bungee);
 
-        Bukkit.getLogger().info("Whitelist initialized.");
+        getLogger().info("Proxy messaging & whitelist initialized.");
     }
 }

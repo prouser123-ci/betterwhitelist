@@ -1,0 +1,4 @@
+name: BetterWhitelistBungee
+version: 1.0-SNAPSHOT
+author: fuzzyfoxie
+main: com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungeePlugin

@@ -1,18 +1,24 @@
 plugins {
     id 'java'
+    id 'idea'
 }
 
-group 'org.example'
+group 'com.dumbdogdiner'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 
 repositories {
     mavenCentral()
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-    compile group: 'net.md-5', name: 'bungeecord-api', version: '1.8-SNAPSHOT'
 }
 
 dependencies {
+    compile group: 'net.md-5', name: 'bungeecord-api', version: '1.14-SNAPSHOT'
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+processResources {
+    expand project.properties
 }

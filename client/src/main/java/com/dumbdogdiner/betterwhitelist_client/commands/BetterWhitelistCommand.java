@@ -11,8 +11,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class BetterWhitelistCommand implements CommandExecutor {
     private FileConfiguration plConf = BetterWhitelistClientPlugin.getPlugin().getConfig();
@@ -66,15 +69,14 @@ public class BetterWhitelistCommand implements CommandExecutor {
      */
     private boolean help(CommandSender sender, String[] args) {
         sender.sendMessage(
-                String.format("%g %bBetterWhiteList v%v",
-                        ChatColor.GOLD,
-                        ChatColor.BOLD,
+                String.format("%s %sBetterWhiteList v%s",
+                        ChatColor.AQUA,
                         BetterWhitelistClientPlugin.getPlugin().getDescription().getVersion()
                 )
         );
 
         for (String[] msg : helpMessages) {
-            sender.sendMessage(String.format("%b%n%w - %i", ChatColor.BLUE, msg[0], ChatColor.WHITE, msg[1]));
+            sender.sendMessage(String.format("%s%s%s - %s", ChatColor.YELLOW, msg[0], ChatColor.WHITE, msg[1]));
         }
         return true;
     }
@@ -102,19 +104,10 @@ public class BetterWhitelistCommand implements CommandExecutor {
      * @return
      */
     private boolean list(CommandSender sender, String[] args) {
-        int count = 0;
+        var names = Bukkit.getWhitelistedPlayers().stream().map(p -> p.getName()).collect(Collectors.toList());
 
-        String[] whitelistedPlayers = new String[Bukkit.getWhitelistedPlayers().size()];
-        for (OfflinePlayer pW : Bukkit.getWhitelistedPlayers()) {
-            if (count != Bukkit.getWhitelistedPlayers().size()) {
-                whitelistedPlayers[count++] = pW.getName();
-            } else {
-                break;
-            }
-        }
-
-        sender.sendMessage("There are currently " + count + " players whitelisted: "
-                + String.join(", ", whitelistedPlayers));
+        sender.sendMessage("There are currently " + names.size() + " players whitelisted: "
+                + String.join(", ", names));
 
         return true;
     }
@@ -141,7 +134,10 @@ public class BetterWhitelistCommand implements CommandExecutor {
         }
 
         if (response != 200) {
-            sender.sendMessage(ChatColor.RED + "This player does not exist!");
+            sender.sendMessage(ChatColor.RED + "if (!banSyncEnabled) {\n" +
+                    "            plugin.getLogger().info(String.format(\"Not checking if '%u' should be banned - banSyncEnabled=false\", e.getPlayer().getUniqueId().toString()));\n" +
+                    "            return;\n" +
+                    "        }This player does not exist!");
             return true;
         }
 

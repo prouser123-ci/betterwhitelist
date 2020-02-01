@@ -11,10 +11,18 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 // I know * imports are bad practice, but intellij is being insistent.
 import java.io.*;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class BungeeMessenger implements PluginMessageListener {
-    public boolean banSyncEnabled = BetterWhitelistClientPlugin.getPlugin().getConfig().getBoolean("enableBanSync");
-    public UUID lastestBan;
+    public BetterWhitelistClientPlugin plugin;
+
+    public boolean banSyncEnabled;
+    public UUID latestBan;
+
+    BungeeMessenger(BetterWhitelistClientPlugin plugin) {
+        this.plugin = plugin;
+        banSyncEnabled = plugin.getConfig().getBoolean("enableBanSync");
+    }
 
     /**
      * Request for a player to be banned globally.
@@ -43,7 +51,8 @@ public class BungeeMessenger implements PluginMessageListener {
      * @param target
      */
     public void checkGlobalBan(Player receiver, UUID target) {
-        Bukkit.getLogger().info("Bunge => Is '" + target.toString() + "' banned?");
+        plugin.getLogger().info("Bungee => Is '" + target.toString() + "' banned?");
+        sendEvent(receiver, "IsBanned", target.toString());
     }
 
 
@@ -73,6 +82,8 @@ public class BungeeMessenger implements PluginMessageListener {
         try {
             command = msgin.readUTF();
         } catch (IOException err) {
+            plugin.getLogger().log(Level.WARNING, "Failed to send message to BungeeCord.");
+            err.printStackTrace();
             return;
         }
 
@@ -99,7 +110,7 @@ public class BungeeMessenger implements PluginMessageListener {
             return;
         }
 
-        Bukkit.getLogger().info("Request to ban user '" + uuidToBan + "' from Bungee.");
+        plugin.getLogger().info("Request to ban user '" + uuidToBan + "' from Bungee.");
 
         Player onlinePlayer = Bukkit.getPlayer(UUID.fromString(uuidToBan));
 
@@ -107,7 +118,7 @@ public class BungeeMessenger implements PluginMessageListener {
         if (onlinePlayer.isOnline() && !onlinePlayer.isBanned()) {
             onlinePlayer.kickPlayer("Banned from server.");
             Bukkit.getBanList(Type.NAME).addBan(onlinePlayer.getName(), "Banned from server.", null, null);
-            lastestBan = UUID.fromString(uuidToBan);
+            latestBan = UUID.fromString(uuidToBan);
         }
     }
 
@@ -118,7 +129,7 @@ public class BungeeMessenger implements PluginMessageListener {
      * @param uuidToCheck
      */
     public void handleCheckBanRequest(Player receiver, String uuidToCheck) {
-        Bukkit.getLogger().info("Checking if UUID '" + uuidToCheck + "' should be banned globally...");
+        plugin.getLogger().info("Checking if UUID '" + uuidToCheck + "' should be banned globally...");
 
         Player player = Bukkit.getPlayer(UUID.fromString(uuidToCheck));
 
@@ -128,7 +139,7 @@ public class BungeeMessenger implements PluginMessageListener {
     }
 
     /**
-     * Send an event to other plugins connected to Bungeecord.
+     * Send an event to other plugins connected to BungeeCord.
      * 
      * Defaults to messaging all ONLINE servers.
      */
@@ -139,9 +150,21 @@ public class BungeeMessenger implements PluginMessageListener {
         out.writeUTF("ONLINE");
         out.writeUTF(subChannel);
 
+        ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
+        DataOutputStream msgout = new DataOutputStream(msgbytes);
+
         for (String arg : args) {
-            out.writeUTF(arg);
+            try {
+                msgout.writeUTF(arg);
+            } catch (IOException err) {
+                plugin.getLogger().warning("Failed to encode message to BungeeCord.");
+                err.printStackTrace();
+                return;
+            }
         }
+
+        out.writeShort(msgbytes.toByteArray().length);
+        out.write(msgbytes.toByteArray());
 
         receiver.sendPluginMessage(BetterWhitelistClientPlugin.getPlugin(), "BungeeCord", out.toByteArray());
     }

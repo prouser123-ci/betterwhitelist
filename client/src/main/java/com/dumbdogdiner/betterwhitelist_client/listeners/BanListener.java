@@ -12,18 +12,26 @@ import org.bukkit.event.player.PlayerQuitEvent;
  * Listener that syncs local server bans to all other servers.
  */
 public class BanListener implements Listener {
-    private boolean banSyncEnabled = BetterWhitelistClientPlugin.getPlugin().getConfig().getBoolean("enableBanSync");
-    private BungeeMessenger bungee = BetterWhitelistClientPlugin.bungee;
+    public BetterWhitelistClientPlugin plugin;
+    public boolean banSyncEnabled;
+
+    public BanListener(BetterWhitelistClientPlugin plugin) {
+        this.plugin = plugin;
+        banSyncEnabled = plugin.getConfig().getBoolean("enableBanSync");
+    }
 
     @EventHandler
     public void onPlayerBan(PlayerQuitEvent e) {
-        if (!banSyncEnabled) {
-            return;
-        }
+
 
         Player target = e.getPlayer();
 
-        if (target.isBanned()) {
+        if (!banSyncEnabled) {
+            plugin.getLogger().info(String.format("Not checking if '%u' should be banned - banSyncEnabled=false", target.getUniqueId().toString()));
+            return;
+        }
+
+        if (!target.isBanned()) {
             return;
         }
 
@@ -36,13 +44,13 @@ public class BanListener implements Listener {
         }
 
         if (!receiver.isOnline()) {
-            Bukkit.getLogger().info("No players are online - cannot inform Bungee of ban. Caching until somebody joins...");
+            plugin.getLogger().info("No players are online - cannot inform Bungee of ban. Caching until somebody joins...");
             // TODO: Add cache.
             return;
         }
 
 
         // TODO: Check if player is banned with BungeeCord.
-        bungee.addGlobalBan(receiver, target.getUniqueId());
+        plugin.bungee.addGlobalBan(receiver, target.getUniqueId());
     }
 }

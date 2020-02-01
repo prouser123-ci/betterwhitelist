@@ -1,12 +1,13 @@
 name: BetterWhitelist
-version: ${project.version}
-main: kokumaji.betterwhitelist.BetterWhitelist
-api-version: 1.13
+version: 1.0-SNAPSHOT
+main: com.dumbdogdiner.betterwhitelist_client.BetterWhitelistClientPlugin
+api-version: 1.14
 prefix: BetterWhitelist
-authors: [Kokumaji]
-description: BetterWhitelist adds a Discord based verification system
+authors: [Kokumaji, skye, WolfgalVlad]
+description: ${project.description}
+
 commands:
   betterwhitelist:
     usage: /betterwhitelist
     description: Main command
-    aliases: [bw, bwhitelist, betterw, whitelist]
+    aliases: [bw, bwhitelist, betterw, whitelist, btw]
