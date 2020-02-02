@@ -16,7 +16,7 @@ import java.util.logging.Level;
 public class BungeeMessenger implements PluginMessageListener {
     public BetterWhitelistClientPlugin plugin;
 
-    public String channel = "BungeeCord";
+    public String channel = "btw:bungee";
 
     public boolean banSyncEnabled;
     public UUID latestBan;
@@ -61,6 +61,8 @@ public class BungeeMessenger implements PluginMessageListener {
 
     @Override
     public void onPluginMessageReceived(String channel, Player receiver, byte[] message) {
+        plugin.getLogger().info(String.format("Received %d bytes on channel '%s'.", message.length, channel));
+
         if (!channel.equals(channel)) {
             return;
         }

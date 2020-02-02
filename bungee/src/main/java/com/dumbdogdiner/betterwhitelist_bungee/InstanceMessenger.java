@@ -14,7 +14,7 @@ import java.io.IOException;
 public class InstanceMessenger implements Listener {
     public BetterWhitelistBungeePlugin plugin;
 
-    public String channel = "BungeeCord";
+    public String channel = "btw:bungee";
     public Boolean didFail = false;
 
     public InstanceMessenger(BetterWhitelistBungeePlugin plugin) {
@@ -22,7 +22,10 @@ public class InstanceMessenger implements Listener {
     }
 
     @EventHandler
-    public void onPluginMessage(PluginMessageEvent e) {
+    public void on(PluginMessageEvent e) {
+
+        plugin.getLogger().info(String.format("Received %d bytes on channel '%s'.", e.getData().length, e.getTag()));
+
         if (didFail) {
             plugin.getLogger().warning(
                     "Skipping handling event from '" + e.getReceiver().getAddress() + "' - handling has failed previously"
