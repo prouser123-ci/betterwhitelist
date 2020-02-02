@@ -3,14 +3,17 @@ package com.dumbdogdiner.betterwhitelist_bungee;
 import net.md_5.bungee.api.plugin.Plugin;
 
 /**
- * The Bungee proxy plugin for propogating whitelist changes/bans to all sub-server instances.
+ * The Bungee proxy plugin for propagating whitelist changes/bans to all sub-server instances.
  */
 public class BetterWhitelistBungeePlugin extends Plugin {
+    public InstanceMessenger bungee = new InstanceMessenger(this);
+
     @Override
     public void onEnable() {
-        getProxy().registerChannel("BungeeCord");
-        getProxy().getPluginManager().registerListener(this, new InstanceMessenger(this));
+        getProxy().registerChannel(bungee.channel);
+        getProxy().getPluginManager().registerListener(this, bungee);
 
-        getLogger().info("Whitelist & proxy communication enabled.");
+        getLogger().info("Proxy messaging & whitelist initialized.");
+        getLogger().info("Will use plugin channel '" + bungee.channel + "' for BungeeCord messaging.");
     }
 }

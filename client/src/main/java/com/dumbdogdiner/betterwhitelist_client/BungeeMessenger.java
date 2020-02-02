@@ -16,6 +16,8 @@ import java.util.logging.Level;
 public class BungeeMessenger implements PluginMessageListener {
     public BetterWhitelistClientPlugin plugin;
 
+    public String channel = "BungeeCord";
+
     public boolean banSyncEnabled;
     public UUID latestBan;
 
@@ -59,7 +61,7 @@ public class BungeeMessenger implements PluginMessageListener {
 
     @Override
     public void onPluginMessageReceived(String channel, Player receiver, byte[] message) {
-        if (!channel.equals("BungeeCord")) {
+        if (!channel.equals(channel)) {
             return;
         }
 
@@ -143,11 +145,9 @@ public class BungeeMessenger implements PluginMessageListener {
      * 
      * Defaults to messaging all ONLINE servers.
      */
-    void sendEvent(Player receiver, String subChannel, String... args) {
+    void sendEvent(Player sender, String subChannel, String... args) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
 
-        out.writeUTF("Forward");
-        out.writeUTF("ONLINE");
         out.writeUTF(subChannel);
 
         ByteArrayOutputStream msgbytes = new ByteArrayOutputStream();
@@ -166,6 +166,7 @@ public class BungeeMessenger implements PluginMessageListener {
         out.writeShort(msgbytes.toByteArray().length);
         out.write(msgbytes.toByteArray());
 
-        receiver.sendPluginMessage(BetterWhitelistClientPlugin.getPlugin(), "BungeeCord", out.toByteArray());
+        sender.sendPluginMessage(BetterWhitelistClientPlugin.getPlugin(), channel, out.toByteArray());
+        plugin.getLogger().info(String.format("[%s][outgoing] %s - args='%s'", channel, subChannel, String.join("', '",  args)));
     }
 }

@@ -5,7 +5,6 @@ import com.dumbdogdiner.betterwhitelist_client.listeners.BanListener;
 
 import com.dumbdogdiner.betterwhitelist_client.listeners.PlayerJoinListener;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class BetterWhitelistClientPlugin extends JavaPlugin {
@@ -34,9 +33,10 @@ public class BetterWhitelistClientPlugin extends JavaPlugin {
 
         // Register proxy messenger.
         bungee = new BungeeMessenger(this);
-        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", bungee);
+        getServer().getMessenger().registerOutgoingPluginChannel(this, bungee.channel);
+        getServer().getMessenger().registerIncomingPluginChannel(this, bungee.channel, bungee);
 
         getLogger().info("Proxy messaging & whitelist initialized.");
+        getLogger().info("Will use plugin channel '" + bungee.channel + "' for BungeeCord messaging.");
     }
 }

@@ -3,7 +3,7 @@ version: 1.0-SNAPSHOT
 main: com.dumbdogdiner.betterwhitelist_client.BetterWhitelistClientPlugin
 api-version: 1.14
 prefix: BetterWhitelist
-authors: [Kokumaji, skye, WolfgalVlad]
+authors: [kokumaji, fuzzyfoxie, vladfrangu]
 description: ${project.description}
 
 commands:
