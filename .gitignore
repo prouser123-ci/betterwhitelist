@@ -87,3 +87,13 @@ target/
 .gradle/
 gradle/
 build/
+client/.idea/gradle.xml
+client/.idea/codeStyles/codeStyleConfig.xml
+bungee/.idea/misc.xml
+bungee/.idea/codeStyles/codeStyleConfig.xml
+bungee/.idea/.gitignore
+client/.idea/vcs.xml
+client/.idea/misc.xml
+client/.idea/.gitignore
+bungee/.idea/gradle.xml
+bungee/.idea/vcs.xml
