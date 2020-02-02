@@ -12,8 +12,6 @@ public class URLRequest {
         connection.setRequestMethod("GET");
         connection.connect();
 
-        int code = connection.getResponseCode();
-
-        return code;
+        return connection.getResponseCode();
     }
 }

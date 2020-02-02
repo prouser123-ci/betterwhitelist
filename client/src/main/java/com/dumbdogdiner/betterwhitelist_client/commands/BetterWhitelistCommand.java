@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class BetterWhitelistCommand implements CommandExecutor {
-    private FileConfiguration plConf = BetterWhitelist.getPlugin().getConfig();
+    private FileConfiguration plConf = BetterWhitelist.getInstance().getConfig();
 
     private String[][] helpMessages = {
             {"/btw reload", "Reloads the plugin and its configuration."},
@@ -67,9 +67,9 @@ public class BetterWhitelistCommand implements CommandExecutor {
      */
     private boolean help(CommandSender sender, String[] args) {
         sender.sendMessage(
-                String.format("%s %sBetterWhiteList v%s",
+                String.format("%s BetterWhiteList v%s",
                         ChatColor.AQUA,
-                        BetterWhitelist.getPlugin().getDescription().getVersion()
+                        BetterWhitelist.getInstance().getDescription().getVersion()
                 )
         );
 
@@ -90,7 +90,7 @@ public class BetterWhitelistCommand implements CommandExecutor {
             return true;
         }
 
-        BetterWhitelist.getPlugin().reloadConfig();
+        BetterWhitelist.getInstance().reloadConfig();
         sender.sendMessage(ChatColor.GREEN + "Config reloaded!");
         return true;
     }
@@ -119,7 +119,7 @@ public class BetterWhitelistCommand implements CommandExecutor {
     private boolean remove(CommandSender sender, String[] args) {
         if (args[0] == null) {
             sender.sendMessage(ChatColor.RED + "Please specify a player!");
-            return true;
+            return false;
         }
 
         int response = 0;
@@ -136,26 +136,30 @@ public class BetterWhitelistCommand implements CommandExecutor {
                     "            plugin.getLogger().info(String.format(\"Not checking if '%u' should be banned - banSyncEnabled=false\", e.getPlayer().getUniqueId().toString()));\n" +
                     "            return;\n" +
                     "        }This player does not exist!");
-            return true;
+            return false;
         }
 
 
         OfflinePlayer p = Bukkit.getPlayer(args[0]);
 
-        if (!p.isWhitelisted()) {
-            sender.sendMessage(ChatColor.RED + "This player is not whitelisted!");
-            return true;
+        if(p != null) {
+            if (!p.isWhitelisted()) {
+                sender.sendMessage(ChatColor.RED + "This player is not whitelisted!");
+                return false;
+            }
+
+            p.setWhitelisted(false);
+
+
+            // TODO: BungeeCord messaging.
+
+
+
+            sender.sendMessage(ChatColor.GREEN + "Removed " + p.getName() + " from the whitelist!");
+            if (p.isOnline()) {
+                Bukkit.getPlayer(p.getUniqueId()).kickPlayer("You've been removed from the whitelist");
+            }
         }
-
-        p.setWhitelisted(false);
-
-        // TODO: BungeeCord messaging.
-
-        sender.sendMessage(ChatColor.GREEN + "Removed " + p.getName() + " from the whitelist!");
-        if (p.isOnline()) {
-            Bukkit.getPlayer(p.getUniqueId()).kickPlayer("You've been removed from the whitelist");
-        }
-
         return true;
     }
 

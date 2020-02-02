@@ -1,14 +1,12 @@
 package com.dumbdogdiner.betterwhitelist_client.utils;
 
+import com.dumbdogdiner.betterwhitelist_client.BetterWhitelist;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class Permissions {
     /**
      * Check if the specified sender has the specified permission.
-     * @param sender
-     * @param subKey
-     * @return
      */
     public static boolean checkPermission(CommandSender sender, String subKey) {
         if (!sender.hasPermission("betterwhitelist.command." + subKey)) {

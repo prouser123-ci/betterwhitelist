@@ -14,23 +14,24 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 public class BungeeMessenger implements PluginMessageListener {
-    public BetterWhitelist plugin;
 
-    public String channel = "btw:bungee";
+    private String channel = "btw:bungee";
 
-    public boolean banSyncEnabled;
-    public UUID latestBan;
+    private boolean banSyncEnabled;
+    private UUID latestBan;
 
-    BungeeMessenger(BetterWhitelist plugin) {
-        this.plugin = plugin;
-        banSyncEnabled = plugin.getConfig().getBoolean("enableBanSync");
+    BungeeMessenger() {
+        banSyncEnabled = BetterWhitelist.getInstance().getConfig().getBoolean("enableBanSync");
+    }
+
+    public String getChannel() {
+        return channel;
     }
 
     /**
      * Request for a player to be banned globally.
-     * @param receiver
-     * @param target
-     * @throws IOException
+     * @param receiver player to ban
+     * @param target UUID of player to ban
      */
     public void addGlobalBan(Player receiver, UUID target) {
         Bukkit.getLogger().info("Requesting player UUID '" + target.toString() + "' be banned globally...");
@@ -39,8 +40,8 @@ public class BungeeMessenger implements PluginMessageListener {
 
     /**
      * Requests the Bungee server to remove a global ban.
-     * @param receiver
-     * @param target
+     * @param receiver player we want to unban
+     * @param target the UUID of the target player to unban
      */
     public void removeGlobalBan(Player receiver, UUID target) {
         Bukkit.getLogger().info("Requesting player UUID '" + target.toString() + "' be pardoned globally...");
@@ -49,11 +50,11 @@ public class BungeeMessenger implements PluginMessageListener {
 
     /**
      * Asks Bungee whether or not the target UUID has been banned.
-     * @param receiver
-     * @param target
+     * @param receiver player we're checking to see if they're banned
+     * @param target the UUID of the player we're checking to ban.
      */
     public void checkGlobalBan(Player receiver, UUID target) {
-        plugin.getLogger().info("Bungee => Is '" + target.toString() + "' banned?");
+        BetterWhitelist.getInstance().getLogger().info("Bungee => Is '" + target.toString() + "' banned?");
         sendEvent(receiver, "IsBanned", target.toString());
     }
 
@@ -61,11 +62,7 @@ public class BungeeMessenger implements PluginMessageListener {
 
     @Override
     public void onPluginMessageReceived(String channel, Player receiver, byte[] message) {
-        plugin.getLogger().info(String.format("Received %d bytes on channel '%s'.", message.length, channel));
-
-        if (!channel.equals(channel)) {
-            return;
-        }
+        BetterWhitelist.getInstance().getLogger().info(String.format("Received %d bytes on channel '%s'.", message.length, channel));
 
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         String subchannel = in.readUTF();
@@ -78,15 +75,15 @@ public class BungeeMessenger implements PluginMessageListener {
         short len = in.readShort();
         byte[] msgbytes = new byte[len];
         in.readFully(msgbytes);
-        DataInputStream msgin = new DataInputStream(new ByteArrayInputStream(msgbytes));
+        DataInputStream msgIn = new DataInputStream(new ByteArrayInputStream(msgbytes));
 
         String command;
 
         // This shouldn't be necessary but VS Code threw a fit at me.
         try {
-            command = msgin.readUTF();
+            command = msgIn.readUTF();
         } catch (IOException err) {
-            plugin.getLogger().log(Level.WARNING, "Failed to send message to BungeeCord.");
+            BetterWhitelist.getInstance().getLogger().log(Level.WARNING, "Failed to send message to BungeeCord.");
             err.printStackTrace();
             return;
         }
@@ -100,44 +97,42 @@ public class BungeeMessenger implements PluginMessageListener {
         if (command.equals("IsBanned")) {
             String uuidToCheck = in.readUTF();
             handleCheckBanRequest(receiver, uuidToCheck);
-            return;
         }
     }
 
     /**
      * Handle a request to ban a player from the server.
      * 
-     * @param uuidToBan
+     * @param uuidToBan uuid of player to ban
      */
-    public void handleBanRequest(String uuidToBan) {
-        if (banSyncEnabled == false) {
+    private void handleBanRequest(String uuidToBan) {
+        if (!banSyncEnabled) {
             return;
         }
 
-        plugin.getLogger().info("Request to ban user '" + uuidToBan + "' from Bungee.");
+        BetterWhitelist.getInstance().getLogger().info("Request to ban user '" + uuidToBan + "' from Bungee.");
 
         Player onlinePlayer = Bukkit.getPlayer(UUID.fromString(uuidToBan));
 
         // If player was found
-        if (onlinePlayer.isOnline() && !onlinePlayer.isBanned()) {
-            onlinePlayer.kickPlayer("Banned from server.");
-            Bukkit.getBanList(Type.NAME).addBan(onlinePlayer.getName(), "Banned from server.", null, null);
-            latestBan = UUID.fromString(uuidToBan);
+            if (onlinePlayer != null && onlinePlayer.isOnline() && !onlinePlayer.isBanned()) {
+                onlinePlayer.kickPlayer("Banned from server.");
+                Bukkit.getBanList(Type.NAME).addBan(onlinePlayer.getName(), "Banned from server.", null, null);
+                latestBan = UUID.fromString(uuidToBan);
+                BetterWhitelist.getInstance().getLogger().log(Level.INFO,
+                        "Player " + onlinePlayer.getName() + " With UUID " + uuidToBan + " banned successfully.");
+            } else {
+            BetterWhitelist.getInstance().getLogger().log(Level.WARNING, "No player found with UUID " + uuidToBan + ".");
         }
     }
 
-    /**
-     * Handle a request from another server to check if a player is banned.
-     * 
-     * @param receiver
-     * @param uuidToCheck
-     */
-    public void handleCheckBanRequest(Player receiver, String uuidToCheck) {
-        plugin.getLogger().info("Checking if UUID '" + uuidToCheck + "' should be banned globally...");
+
+    private void handleCheckBanRequest(Player receiver, String uuidToCheck) {
+        BetterWhitelist.getInstance().getLogger().info("Checking if UUID '" + uuidToCheck + "' should be banned globally...");
 
         Player player = Bukkit.getPlayer(UUID.fromString(uuidToCheck));
 
-        if (player.isBanned()) {
+        if (player != null && player.isBanned()) {
             sendEvent(receiver, "Ban", uuidToCheck);
         }
     }
@@ -147,7 +142,7 @@ public class BungeeMessenger implements PluginMessageListener {
      * 
      * Defaults to messaging all ONLINE servers.
      */
-    void sendEvent(Player sender, String subChannel, String... args) {
+    private void sendEvent(Player sender, String subChannel, String... args) {
         if (!checkIfBungee()) {
             return;
         }
@@ -163,7 +158,7 @@ public class BungeeMessenger implements PluginMessageListener {
             try {
                 msgout.writeUTF(arg);
             } catch (IOException err) {
-                plugin.getLogger().warning("Failed to encode message to BungeeCord.");
+                BetterWhitelist.getInstance().getLogger().warning("Failed to encode message to BungeeCord.");
                 err.printStackTrace();
                 return;
             }
@@ -172,8 +167,8 @@ public class BungeeMessenger implements PluginMessageListener {
         out.writeShort(msgbytes.toByteArray().length);
         out.write(msgbytes.toByteArray());
 
-        sender.sendPluginMessage(BetterWhitelist.getPlugin(), channel, out.toByteArray());
-        plugin.getLogger().info(String.format("[%s][outgoing] %s - args='%s'", channel, subChannel, String.join("', '",  args)));
+        sender.sendPluginMessage(BetterWhitelist.getInstance(), channel, out.toByteArray());
+        BetterWhitelist.getInstance().getLogger().info(String.format("[%s][outgoing] %s - args='%s'", channel, subChannel, String.join("', '",  args)));
     }
 
     /**
@@ -181,18 +176,18 @@ public class BungeeMessenger implements PluginMessageListener {
      */
     private Boolean checkIfBungee()
     {
-        var logger = plugin.getLogger();
-        var server = plugin.getServer();
+        var logger = BetterWhitelist.getInstance().getLogger();
+        var server = BetterWhitelist.getInstance().getServer();
 
         // we check if the server is Spigot/Paper (because of the spigot.yml file)
         if ( !server.getVersion().contains("Spigot") && !server.getVersion().contains("Paper"))  {
             logger.severe( "BTW isn't running on a Bungee-supporting server! Please swap your JAR out for a Spigot or Paper one and try again.");
-            server.getPluginManager().disablePlugin(plugin);
+            server.getPluginManager().disablePlugin(BetterWhitelist.getInstance());
             return false;
         }
         if (server.spigot().getConfig().getConfigurationSection("settings").getBoolean( "settings.bungeecord")) {
             logger.severe("This server isn't running in Bungee-enabled mode - enable it in 'spigot.yml' by changing the 'bungeecord' path to 'true'.");
-            server.getPluginManager().disablePlugin(plugin);
+            server.getPluginManager().disablePlugin(BetterWhitelist.getInstance());
             return false;
         }
         return true;

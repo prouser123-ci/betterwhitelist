@@ -7,6 +7,8 @@ import com.dumbdogdiner.betterwhitelist_client.listeners.PlayerJoinListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.logging.Level;
+
 public class BetterWhitelist extends JavaPlugin {
     public static BungeeMessenger bungee;
 
@@ -16,27 +18,33 @@ public class BetterWhitelist extends JavaPlugin {
      * Returns a static reference to the plugin.
      * @return
      */
-    public static BetterWhitelist getPlugin() {
+    public static BetterWhitelist getInstance() {
         return instance;
     }
+
+    private BetterWhitelist() {};
 
     @Override
     public void onEnable() {
         instance = this;
 
         saveDefaultConfig();
-        getCommand("betterwhitelist").setExecutor(new BetterWhitelistCommand());
-
+        try {
+            getCommand("betterwhitelist").setExecutor(new BetterWhitelistCommand());
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            instance.getLogger().log(Level.SEVERE, "Commmand \"betterwhitelist\" not found!");
+        }
         // Register event listeners.
-        Bukkit.getPluginManager().registerEvents(new BanListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new BanListener(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(this), this);
 
         // Register proxy messenger.
-        bungee = new BungeeMessenger(this);
-        getServer().getMessenger().registerOutgoingPluginChannel(this, bungee.channel);
-        getServer().getMessenger().registerIncomingPluginChannel(this, bungee.channel, bungee);
+        bungee = new BungeeMessenger();
+        getServer().getMessenger().registerOutgoingPluginChannel(this, bungee.getChannel());
+        getServer().getMessenger().registerIncomingPluginChannel(this, bungee.getChannel(), bungee);
 
         getLogger().info("Proxy messaging & whitelist initialized.");
-        getLogger().info("Will use plugin channel '" + bungee.channel + "' for plugin messaging.");
+        getLogger().info("Will use plugin channel '" + bungee.getChannel() + "' for plugin messaging.");
     }
 }
