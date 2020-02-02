@@ -12,12 +12,12 @@ import java.io.IOException;
  * A class with methods for communicating between server instances.
  */
 public class InstanceMessenger implements Listener {
-    public BetterWhitelistBungeePlugin plugin;
+    public BetterWhitelistBungee plugin;
 
     public String channel = "btw:bungee";
     public Boolean didFail = false;
 
-    public InstanceMessenger(BetterWhitelistBungeePlugin plugin) {
+    public InstanceMessenger(BetterWhitelistBungee plugin) {
         this.plugin = plugin;
     }
 

@@ -1,6 +1,6 @@
 package com.dumbdogdiner.betterwhitelist_client.commands;
 
-import com.dumbdogdiner.betterwhitelist_client.BetterWhitelistClientPlugin;
+import com.dumbdogdiner.betterwhitelist_client.BetterWhitelist;
 import com.dumbdogdiner.betterwhitelist_client.utils.Permissions;
 import com.dumbdogdiner.betterwhitelist_client.utils.URLRequest;
 import org.bukkit.Bukkit;
@@ -11,14 +11,12 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class BetterWhitelistCommand implements CommandExecutor {
-    private FileConfiguration plConf = BetterWhitelistClientPlugin.getPlugin().getConfig();
+    private FileConfiguration plConf = BetterWhitelist.getPlugin().getConfig();
 
     private String[][] helpMessages = {
             {"/btw reload", "Reloads the plugin and its configuration."},
@@ -71,7 +69,7 @@ public class BetterWhitelistCommand implements CommandExecutor {
         sender.sendMessage(
                 String.format("%s %sBetterWhiteList v%s",
                         ChatColor.AQUA,
-                        BetterWhitelistClientPlugin.getPlugin().getDescription().getVersion()
+                        BetterWhitelist.getPlugin().getDescription().getVersion()
                 )
         );
 
@@ -92,7 +90,7 @@ public class BetterWhitelistCommand implements CommandExecutor {
             return true;
         }
 
-        BetterWhitelistClientPlugin.getPlugin().reloadConfig();
+        BetterWhitelist.getPlugin().reloadConfig();
         sender.sendMessage(ChatColor.GREEN + "Config reloaded!");
         return true;
     }

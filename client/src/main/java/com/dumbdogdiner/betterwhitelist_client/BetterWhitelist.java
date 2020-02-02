@@ -7,16 +7,16 @@ import com.dumbdogdiner.betterwhitelist_client.listeners.PlayerJoinListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class BetterWhitelistClientPlugin extends JavaPlugin {
+public class BetterWhitelist extends JavaPlugin {
     public static BungeeMessenger bungee;
 
-    private static BetterWhitelistClientPlugin instance;
+    private static BetterWhitelist instance;
 
     /**
      * Returns a static reference to the plugin.
      * @return
      */
-    public static BetterWhitelistClientPlugin getPlugin() {
+    public static BetterWhitelist getPlugin() {
         return instance;
     }
 

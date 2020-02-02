@@ -1,6 +1,5 @@
 package com.dumbdogdiner.betterwhitelist_bungee.discord.listeners;
 
-import com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungeePlugin;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.WhitelistBot;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;

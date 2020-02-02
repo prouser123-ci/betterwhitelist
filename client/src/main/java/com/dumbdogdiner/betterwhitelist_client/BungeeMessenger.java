@@ -14,14 +14,14 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 public class BungeeMessenger implements PluginMessageListener {
-    public BetterWhitelistClientPlugin plugin;
+    public BetterWhitelist plugin;
 
     public String channel = "btw:bungee";
 
     public boolean banSyncEnabled;
     public UUID latestBan;
 
-    BungeeMessenger(BetterWhitelistClientPlugin plugin) {
+    BungeeMessenger(BetterWhitelist plugin) {
         this.plugin = plugin;
         banSyncEnabled = plugin.getConfig().getBoolean("enableBanSync");
     }
@@ -172,7 +172,7 @@ public class BungeeMessenger implements PluginMessageListener {
         out.writeShort(msgbytes.toByteArray().length);
         out.write(msgbytes.toByteArray());
 
-        sender.sendPluginMessage(BetterWhitelistClientPlugin.getPlugin(), channel, out.toByteArray());
+        sender.sendPluginMessage(BetterWhitelist.getPlugin(), channel, out.toByteArray());
         plugin.getLogger().info(String.format("[%s][outgoing] %s - args='%s'", channel, subChannel, String.join("', '",  args)));
     }
 

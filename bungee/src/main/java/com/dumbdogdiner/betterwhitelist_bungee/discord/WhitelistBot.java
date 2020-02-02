@@ -1,6 +1,6 @@
 package com.dumbdogdiner.betterwhitelist_bungee.discord;
 
-import com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungeePlugin;
+import com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungee;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.lib.Command;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.listeners.GuildBanListener;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.listeners.GuildLeaveListener;
@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;;
 
 
 import javax.security.auth.login.LoginException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,13 +24,13 @@ import java.util.logging.Logger;
  */
 public class WhitelistBot {
     public JDA jda;
-    public BetterWhitelistBungeePlugin plugin;
+    public BetterWhitelistBungee plugin;
     public Logger logger = plugin.getLogger();
     public ConfigManager configManager = plugin.configManager;
 
     public Map<String, Command> commands = new HashMap<>();
 
-    public WhitelistBot(BetterWhitelistBungeePlugin plugin) {
+    public WhitelistBot(BetterWhitelistBungee plugin) {
         this.plugin = plugin;
     }
 

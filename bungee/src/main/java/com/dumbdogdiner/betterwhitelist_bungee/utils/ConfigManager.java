@@ -1,6 +1,6 @@
 package com.dumbdogdiner.betterwhitelist_bungee.utils;
 
-import com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungeePlugin;
+import com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungee;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
@@ -11,9 +11,9 @@ import java.io.IOException;
 public class ConfigManager {
 
     public Configuration config;
-    public BetterWhitelistBungeePlugin plugin;
+    public BetterWhitelistBungee plugin;
 
-    public ConfigManager(BetterWhitelistBungeePlugin plugin) {
+    public ConfigManager(BetterWhitelistBungee plugin) {
         this.plugin = plugin;
         this.fetchConfig();
     }

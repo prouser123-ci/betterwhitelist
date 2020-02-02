@@ -1,7 +1,6 @@
 package com.dumbdogdiner.betterwhitelist_client.listeners;
 
-import com.dumbdogdiner.betterwhitelist_client.BetterWhitelistClientPlugin;
-import com.dumbdogdiner.betterwhitelist_client.BungeeMessenger;
+import com.dumbdogdiner.betterwhitelist_client.BetterWhitelist;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,10 +11,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
  * Listener that syncs local server bans to all other servers.
  */
 public class BanListener implements Listener {
-    public BetterWhitelistClientPlugin plugin;
+    public BetterWhitelist plugin;
     public boolean banSyncEnabled;
 
-    public BanListener(BetterWhitelistClientPlugin plugin) {
+    public BanListener(BetterWhitelist plugin) {
         this.plugin = plugin;
         banSyncEnabled = plugin.getConfig().getBoolean("enableBanSync");
     }

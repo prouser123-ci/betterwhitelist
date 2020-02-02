@@ -1,6 +1,6 @@
 name: BetterWhitelist
 version: 1.0-SNAPSHOT
-main: com.dumbdogdiner.betterwhitelist_client.BetterWhitelistClientPlugin
+main: com.dumbdogdiner.betterwhitelist_client.BetterWhitelist
 api-version: 1.14
 prefix: BetterWhitelist
 authors: [kokumaji, fuzzyfoxie, vladfrangu]

@@ -1,6 +1,6 @@
 package com.dumbdogdiner.betterwhitelist_bungee.utils;
 
-import com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungeePlugin;
+import com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungee;
 import net.md_5.bungee.api.ChatColor;
 
 import java.sql.Connection;
@@ -15,9 +15,9 @@ public class SQLConnection {
     private String sqlUsername;
     private String sqlPassword;
 
-    public BetterWhitelistBungeePlugin plugin;
+    public BetterWhitelistBungee plugin;
 
-    public SQLConnection(BetterWhitelistBungeePlugin plugin) {
+    public SQLConnection(BetterWhitelistBungee plugin) {
         this.plugin = plugin;
 
         // TODO: Fix this

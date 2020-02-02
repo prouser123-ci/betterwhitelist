@@ -1,4 +1,4 @@
 name: BetterWhitelistBungee
 version: 1.0-SNAPSHOT
 authors: [kokumaji, fuzzyfoxie, vladfrangu]
-main: com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungeePlugin
+main: com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungee

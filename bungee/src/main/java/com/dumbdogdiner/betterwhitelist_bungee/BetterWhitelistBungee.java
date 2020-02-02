@@ -8,7 +8,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 /**
  * The Bungee proxy plugin for propagating whitelist changes/bans to all sub-server instances.
  */
-public class BetterWhitelistBungeePlugin extends Plugin {
+public class BetterWhitelistBungee extends Plugin {
     public InstanceMessenger bungee = new InstanceMessenger(this);
     public SQLConnection sql = new SQLConnection(this);
     public WhitelistBot bot = new WhitelistBot(this);

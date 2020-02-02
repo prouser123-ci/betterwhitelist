@@ -1,11 +1,7 @@
 package com.dumbdogdiner.betterwhitelist_bungee.discord.listeners;
 
-import com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungeePlugin;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.WhitelistBot;
-import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 /**

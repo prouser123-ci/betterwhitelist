@@ -1,6 +1,6 @@
 package com.dumbdogdiner.betterwhitelist_client.listeners;
 
-import com.dumbdogdiner.betterwhitelist_client.BetterWhitelistClientPlugin;
+import com.dumbdogdiner.betterwhitelist_client.BetterWhitelist;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,10 +13,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
  * Listener that checks newly-joined players with the global ban list to see if they should be banned.
  */
 public class PlayerJoinListener implements Listener {
-    public BetterWhitelistClientPlugin plugin;
+    public BetterWhitelist plugin;
     public boolean banSyncEnabled;
 
-    public PlayerJoinListener(BetterWhitelistClientPlugin plugin) {
+    public PlayerJoinListener(BetterWhitelist plugin) {
         this.plugin = plugin;
         banSyncEnabled = plugin.getConfig().getBoolean("enableBanSync");
     }
