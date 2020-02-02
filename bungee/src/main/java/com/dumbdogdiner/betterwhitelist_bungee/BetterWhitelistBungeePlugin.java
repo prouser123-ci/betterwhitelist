@@ -14,6 +14,6 @@ public class BetterWhitelistBungeePlugin extends Plugin {
         getProxy().getPluginManager().registerListener(this, bungee);
 
         getLogger().info("Proxy messaging & whitelist initialized.");
-        getLogger().info("Will use plugin channel '" + bungee.channel + "' for BungeeCord messaging.");
+        getLogger().info("Will use plugin channel '" + bungee.channel + "' for plugin messaging.");
     }
 }

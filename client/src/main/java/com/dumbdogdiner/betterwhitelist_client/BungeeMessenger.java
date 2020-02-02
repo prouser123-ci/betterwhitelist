@@ -146,6 +146,10 @@ public class BungeeMessenger implements PluginMessageListener {
      * Defaults to messaging all ONLINE servers.
      */
     void sendEvent(Player sender, String subChannel, String... args) {
+        if (!checkIfBungee()) {
+            return;
+        }
+
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
 
         out.writeUTF(subChannel);
@@ -168,5 +172,27 @@ public class BungeeMessenger implements PluginMessageListener {
 
         sender.sendPluginMessage(BetterWhitelistClientPlugin.getPlugin(), channel, out.toByteArray());
         plugin.getLogger().info(String.format("[%s][outgoing] %s - args='%s'", channel, subChannel, String.join("', '",  args)));
+    }
+
+    /**
+     * Checks if the server is running BungeeCord.
+     */
+    private Boolean checkIfBungee()
+    {
+        var logger = plugin.getLogger();
+        var server = plugin.getServer();
+
+        // we check if the server is Spigot/Paper (because of the spigot.yml file)
+        if ( !server.getVersion().contains("Spigot") && !server.getVersion().contains("Paper"))  {
+            logger.severe( "BTW isn't running on a Bungee-supporting server! Please swap your JAR out for a Spigot or Paper one and try again.");
+            server.getPluginManager().disablePlugin(plugin);
+            return false;
+        }
+        if (server.spigot().getConfig().getConfigurationSection("settings").getBoolean( "settings.bungeecord")) {
+            logger.severe("This server isn't running in Bungee-enabled mode - enable it in 'spigot.yml' by changing the 'bungeecord' path to 'true'.");
+            server.getPluginManager().disablePlugin(plugin);
+            return false;
+        }
+        return true;
     }
 }
