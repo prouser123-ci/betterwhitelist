@@ -22,12 +22,12 @@ public class BetterWhitelist extends JavaPlugin {
         return instance;
     }
 
-    private BetterWhitelist() {};
+    public BetterWhitelist() {
+        instance = this;
+    };
 
     @Override
     public void onEnable() {
-        instance = this;
-
         saveDefaultConfig();
         try {
             getCommand("betterwhitelist").setExecutor(new BetterWhitelistCommand());

@@ -6,10 +6,13 @@ import java.util.List;
 /**
  * Represents a user-runnable command.
  */
-public abstract  class Command {
+public abstract class Command {
     private static String name = "Command";
 
     private List<CommandInhibitor> inhibitors = new ArrayList<>();
+    public List<CommandInhibitor> getInibitors() {
+        return inhibitors;
+    }
 
     public abstract boolean run(Context ctx, String... args);
 
@@ -42,7 +45,7 @@ public abstract  class Command {
      */
     protected void useInhibitor(CommandInhibitor... inhibitors) {
         for (CommandInhibitor inhibitor : inhibitors) {
-            this.inhibitors.add(inhibitor);
+            getInibitors().add(inhibitor);
         }
     }
 }

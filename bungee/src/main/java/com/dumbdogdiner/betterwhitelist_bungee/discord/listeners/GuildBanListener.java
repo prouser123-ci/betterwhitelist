@@ -10,13 +10,6 @@ import javax.annotation.Nonnull;
  * Listener that waits for guild ban events, and removes banned users from the Minecraft whitelist.
  */
 public class GuildBanListener extends ListenerAdapter {
-
-    public WhitelistBot bot;
-
-    public GuildBanListener(WhitelistBot bot) {
-        this.bot = bot;
-    }
-
     @Override
     public void onGuildBan(@Nonnull GuildBanEvent event) {
         super.onGuildBan(event);

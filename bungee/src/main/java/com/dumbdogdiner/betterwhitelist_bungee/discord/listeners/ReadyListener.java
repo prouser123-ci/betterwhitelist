@@ -8,14 +8,8 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
  * Listen for the WS READY event.
  */
 public class ReadyListener extends ListenerAdapter {
-    public WhitelistBot bot;
-
-    public ReadyListener(WhitelistBot bot) {
-        this.bot = bot;
-    }
-
     @Override
     public void onReady(ReadyEvent event) {
-        bot.logger.info("Discord bot has entered the READY state.");
+        WhitelistBot.getInstance().logger.info("Discord bot has entered the READY state.");
     }
 }

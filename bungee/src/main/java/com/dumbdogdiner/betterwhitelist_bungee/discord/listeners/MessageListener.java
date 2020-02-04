@@ -14,23 +14,16 @@ import java.util.List;
  * Listens for new messages.
  */
 public class MessageListener extends ListenerAdapter {
-
-    public WhitelistBot bot;
-
-    public MessageListener(WhitelistBot bot) {
-        this.bot = bot;
-    }
-
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent e) {
         String rawContent = e.getMessage().getContentRaw();
-        String prefix = bot.configManager.getConfig().getString("discord.prefix");
+        String prefix = WhitelistBot.getInstance().configManager.getConfig().getString("discord.prefix");
 
         if (e.getAuthor().isBot() || e.getChannelType() == ChannelType.PRIVATE || !rawContent.startsWith(prefix)) {
             return;
         }
 
-        if (e.getMessage().isMentioned(bot.jda.getSelfUser())) {
+        if (e.getMessage().isMentioned(WhitelistBot.getJda().getSelfUser())) {
             e.getChannel().sendMessage("Hai!! ^w^ My prefix is `" + prefix + "`.").queue();
             return;
         }
@@ -39,8 +32,8 @@ public class MessageListener extends ListenerAdapter {
         List<String> args = Arrays.asList(content.split(" "));
         String commandName = args.remove(0);
 
-        if (bot.commands.containsKey(commandName)) {
-            bot.commands.get(commandName).execute(new Context(e), (String[]) args.toArray());
+        if (WhitelistBot.getInstance().commands.containsKey(commandName)) {
+            WhitelistBot.getInstance().commands.get(commandName).execute(new Context(e), (String[]) args.toArray());
         }
     }
 }
