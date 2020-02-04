@@ -5,8 +5,9 @@ import com.dumbdogdiner.betterwhitelist_bungee.discord.lib.Command;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class GetStatusCommand extends Command {
-    static {
-        name = "status";
+
+    public GetStatusCommand() {
+        this.name = "status";
     }
 
     @Override

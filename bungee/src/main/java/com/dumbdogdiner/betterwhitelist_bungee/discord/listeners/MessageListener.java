@@ -33,7 +33,17 @@ public class MessageListener extends ListenerAdapter {
 
         if (WhitelistBot.getCommands().containsKey(commandName)) {
             WhitelistBot.getLogger().info(String.format("[discord] %s (%s) => %s", e.getAuthor().getAsTag(),e.getAuthor().getId(), commandName));
-            WhitelistBot.getCommands().get(commandName).execute(e, args);
+           try {
+               WhitelistBot.getCommands().get(commandName).execute(e, args);
+           } catch(Exception err) {
+                WhitelistBot.getLogger().severe("Error in command '" + commandName + "':");
+                err.printStackTrace();
+
+                e.getChannel().sendMessage(String.format(
+                    ":x: **Whoops!** Internal error - please ask a dev to take a look. (`%s`)",
+                    err.getClass().getCanonicalName()
+                )).queue();
+           }
         } else {
             e.getChannel()
                     .sendMessage(":x: **Oops!** Unknown command `" + commandName + "` - do `" + prefix + "help` for a list of commands.")

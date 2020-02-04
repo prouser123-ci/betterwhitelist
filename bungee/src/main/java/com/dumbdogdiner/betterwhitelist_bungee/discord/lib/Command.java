@@ -9,10 +9,10 @@ import java.util.List;
  * Represents a user-runnable command.
  */
 public abstract class Command {
+    protected String name;
 
-    protected static String name = "Command";
-    public static String getName() {
-        return name;
+    public String getName() {
+        return this.name;
     }
 
     private List<CommandInhibitor> inhibitors = new ArrayList<>();

@@ -25,7 +25,7 @@ public class BetterWhitelistBungee extends Plugin {
         getProxy().registerChannel(InstanceMessenger.getChannel());
         getProxy().getPluginManager().registerListener(this, InstanceMessenger.getInstance());
 
-        WhitelistBot.getInstance().start();
+        WhitelistBot.getInstance().init();
         getLogger().info("[discord] Spawned WhitelistBot thread.");
 
         SQLConnection.checkTable();
