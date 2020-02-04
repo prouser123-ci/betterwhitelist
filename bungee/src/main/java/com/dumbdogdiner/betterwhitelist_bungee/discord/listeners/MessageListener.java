@@ -16,13 +16,20 @@ public class MessageListener extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent e) {
         var rawContent = e.getMessage().getContentRaw();
         var prefix = PluginConfig.getConfig().getString("discord.prefix");
+        var guildId = PluginConfig.getConfig().getString("discord.guildId");
+
+        if (e.getAuthor().isBot() || e.getChannelType() == ChannelType.PRIVATE  || !e.getGuild().getId().equals(guildId)) {
+            return;
+        }
 
         if (e.getMessage().isMentioned(WhitelistBot.getJda().getSelfUser())) {
             e.getChannel().sendMessage("**Hai!! ^w^** My prefix is `" + prefix + "`.").queue();
             return;
         }
 
-        if (e.getAuthor().isBot() || e.getChannelType() == ChannelType.PRIVATE || !rawContent.startsWith(prefix)) {
+        if (
+            !rawContent.startsWith(prefix)
+        ) {
             return;
         }
 

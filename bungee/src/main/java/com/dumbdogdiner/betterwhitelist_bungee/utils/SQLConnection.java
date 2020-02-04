@@ -6,6 +6,8 @@ import java.sql.*;
 
 public class SQLConnection {
 
+    // TODO: Use a pooled connection.
+
     private static String databaseUrl = String.format(
             "jdbc:mysql://%s:%s/%s",
             PluginConfig.getConfig().getString("mysql.host"),
@@ -121,20 +123,22 @@ public class SQLConnection {
      * @param discordID
      * @param uuid
      */
-    public static void addEntry(String discordID, String uuid) {
+    public static boolean addEntry(String discordID, String uuid) {
         if (!enabled) {
             BetterWhitelistBungee.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
-            return;
+            return false;
         }
 
         try {
             var statement = createStatement();
             statement.executeUpdate("INSERT IGNORE INTO minecraft_whitelist (discordID, minecraft_uuid) VALUES ('" + discordID + "','" + uuid + "');");
             statement.getConnection().close();
+            return true;
         }
 
         catch(Exception e) {
             handleSQLError(e);
+            return false;
         }
     }
 
@@ -142,20 +146,22 @@ public class SQLConnection {
      * Remove a user from the database using their Discord ID.
      * @param discordID
      */
-    public static void removeEntry(String discordID) {
+    public static boolean removeEntry(String discordID) {
         if (!enabled) {
             BetterWhitelistBungee.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
-            return;
+            return false;
         }
 
         try {
             var statement = createStatement();
             statement.executeUpdate("DELETE FROM `minecraft_whitelist` WHERE `discordID` = '" + discordID + "'");
             statement.getConnection().close();
+            return true;
         }
 
         catch(Exception e) {
             handleSQLError(e);
+            return false;
         }
     }
 
@@ -163,20 +169,22 @@ public class SQLConnection {
      * Remove a user from the database using their Minecraft UUID.
      * @param uuid
      */
-    public static void removeEntryUsingUuid(String uuid) {
+    public static boolean removeEntryUsingUuid(String uuid) {
         if (!enabled) {
             BetterWhitelistBungee.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
-            return;
+            return false;
         }
 
         try {
             var statement = createStatement();
             statement.executeUpdate("DELETE FROM `minecraft_whitelist` WHERE `minecraft_uuid` = '" + uuid + "'");
             statement.getConnection().close();
+            return true;
         }
 
         catch(Exception e) {
             handleSQLError(e);
+            return false;
         }
     }
 }

@@ -8,15 +8,14 @@ public class GetStatusCommand extends Command {
 
     public GetStatusCommand() {
         this.name = "status";
+        this.description = "Gets the bot's status.";
     }
 
     @Override
-    public boolean run(MessageReceivedEvent e, String... args) {
+    public void run(MessageReceivedEvent e, String... args) {
         e.getChannel().sendMessage(String.format(
             "**Meep!! ^w^**\nPing: `%dms`",
             Math.round(WhitelistBot.getJda().getGatewayPing()
         ))).queue();
-
-        return true;
     }
 }

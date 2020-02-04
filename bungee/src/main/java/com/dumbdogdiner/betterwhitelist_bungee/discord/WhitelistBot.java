@@ -3,6 +3,7 @@ package com.dumbdogdiner.betterwhitelist_bungee.discord;
 import com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungee;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.commands.GetStatusCommand;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.commands.HelpCommand;
+import com.dumbdogdiner.betterwhitelist_bungee.discord.commands.Unwhitelist;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.commands.WhitelistCommand;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.lib.Command;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.listeners.GuildBanListener;
@@ -72,6 +73,7 @@ public class WhitelistBot {
         addCommand(
             new GetStatusCommand(),
             new WhitelistCommand(),
+            new Unwhitelist(),
             new HelpCommand()
         );
 
