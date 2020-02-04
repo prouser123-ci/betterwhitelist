@@ -32,6 +32,8 @@ public class UsernameValidator {
         var target = ClientBuilder.newClient().target(formUrl(username));
         var result = new Gson().fromJson(target.request().get(String.class), MojangUser.class);
 
+        result.id = hyphenateUUID(result.id);
+
         BetterWhitelistBungee.getInstance().getLogger().info(String.format("Got UUID '%s' for user '%s'.", result.id, result.name));
 
         return result;
@@ -45,5 +47,17 @@ public class UsernameValidator {
     private static String formUrl(String username) {
         String baseUrl = "https://api.mojang.com/users/profiles/minecraft/";
         return String.format("%s%s?at=%s", baseUrl, username, System.currentTimeMillis() / 1000L);
+    }
+
+    /**
+     * Mojang API sends back de-hyphenated UUIDs. This is a util method to add those hyphens back in.
+     * @param uuid
+     * @return
+     */
+    private static String hyphenateUUID(String uuid) {
+        return uuid.replaceFirst(
+            "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
+            "$1-$2-$3-$4-$5"
+        );
     }
 }
