@@ -6,8 +6,7 @@ import com.dumbdogdiner.betterwhitelist_bungee.discord.commands.HelpCommand;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.commands.Unwhitelist;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.commands.WhitelistCommand;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.lib.Command;
-import com.dumbdogdiner.betterwhitelist_bungee.discord.listeners.GuildBanListener;
-import com.dumbdogdiner.betterwhitelist_bungee.discord.listeners.GuildLeaveListener;
+import com.dumbdogdiner.betterwhitelist_bungee.discord.listeners.GuildEventListener;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.listeners.MessageListener;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.listeners.ReadyListener;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.PluginConfig;
@@ -64,8 +63,7 @@ public class WhitelistBot {
         // Register Events
         builder.addEventListeners(
             new ReadyListener(),
-            new GuildBanListener(),
-            new GuildLeaveListener(),
+            new GuildEventListener(),
             new MessageListener()
         );
 
