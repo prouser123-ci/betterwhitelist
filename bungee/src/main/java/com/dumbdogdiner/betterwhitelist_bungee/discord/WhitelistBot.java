@@ -1,36 +1,30 @@
 package com.dumbdogdiner.betterwhitelist_bungee.discord;
 
 import com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungee;
-import com.dumbdogdiner.betterwhitelist_bungee.discord.commands.WhitelistCommand;
+import com.dumbdogdiner.betterwhitelist_bungee.discord.commands.GetStatusCommand;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.lib.Command;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.listeners.GuildBanListener;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.listeners.GuildLeaveListener;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.listeners.MessageListener;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.listeners.ReadyListener;
-import com.dumbdogdiner.betterwhitelist_bungee.utils.ConfigManager;
+import com.dumbdogdiner.betterwhitelist_bungee.utils.PluginConfig;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;;
-
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.security.auth.login.LoginException;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
 /**
  * Discord bot for whitelisting users from DDD itself.
  */
-public class WhitelistBot {
+public class WhitelistBot extends Thread {
 
     private static WhitelistBot instance;
-    private static JDA jda = null;
-    private static HashMap<String, Command> commands = new HashMap<>();
-
-    private WhitelistBot() { }
-
     public static WhitelistBot getInstance() {
         if (instance == null) {
             instance = new WhitelistBot();
@@ -38,50 +32,64 @@ public class WhitelistBot {
         return instance;
     }
 
-    // Getters
+    private WhitelistBot() { }
+
+    private static JDA jda = null;
     public static JDA getJda() {
         return jda;
+    }
+
+    private static HashMap<String, Command> commands = new HashMap<>();
+    public static HashMap<String, Command> getCommands() {
+        return commands;
     }
 
     public static Logger getLogger() {
         return BetterWhitelistBungee.getInstance().getLogger();
     }
 
-    public static HashMap<String, Command> getCommands() {
-        return commands;
-    }
-
     /**
      * Initialize the bot.
      */
-    public static void init() {
-        var builder = new JDABuilder(AccountType.BOT);
+    @Override
+    public void run() {
+        var builder = new JDABuilder(AccountType.BOT)
+            .setToken(PluginConfig.getConfig().getString("discord.token"));
+
+        configureMemory(builder);
+
+        // Register Events
+        builder.addEventListeners(
+            new ReadyListener(),
+            new GuildBanListener(),
+            new GuildLeaveListener(),
+            new MessageListener()
+        );
+
+        // Register Commands
+        addCommand(new GetStatusCommand());
+
+        builder.setActivity(Activity.watching("the cutest fluffs \uD83E\uDDE1"));
+
         try {
-            configureMemory(builder);
-
-            jda = new JDABuilder()
-                .setToken(BetterWhitelistBungee.getInstance().configManager.getConfig().getString("discord.token"))
-                .addEventListeners(
-                    new ReadyListener(),
-                    new GuildBanListener(),
-                    new GuildLeaveListener(),
-                    new MessageListener()
-                ).build();
-
-            addCommand(new WhitelistCommand());
+            getLogger().info("[discord] Using access token '" + PluginConfig.getConfig().getString("discord.token") + "'...");
+            jda = builder.build();
         } catch (LoginException err) {
-            getLogger().severe("WhitelistBot threw an error while trying to authenticate with Discord.");
+            getLogger().severe("[discord] WhitelistBot threw an error while trying to authenticate with Discord.");
             err.printStackTrace();
         }
     }
 
     /**
-     * Configure flags for the JDABuilder.
+     * Configure flags for the JDABuilder. Saves memory :3
      * @param builder
+     *
+     * TODO: This breaks: "java.lang.ClassNotFoundException: net.dv8tion.jda.api.utils.cache.CacheFlag"
      */
+
     private static void configureMemory(JDABuilder builder) {
         builder.setDisabledCacheFlags(
-                EnumSet.of(CacheFlag.ACTIVITY)
+                EnumSet.of(CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE, CacheFlag.EMOTE)
         );
     }
 

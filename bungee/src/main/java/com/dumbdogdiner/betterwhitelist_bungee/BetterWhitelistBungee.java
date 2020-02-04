@@ -1,7 +1,7 @@
 package com.dumbdogdiner.betterwhitelist_bungee;
 
 import com.dumbdogdiner.betterwhitelist_bungee.discord.WhitelistBot;
-import com.dumbdogdiner.betterwhitelist_bungee.utils.ConfigManager;
+import com.dumbdogdiner.betterwhitelist_bungee.utils.PluginConfig;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.SQLConnection;
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -11,33 +11,31 @@ import net.md_5.bungee.api.plugin.Plugin;
 public class BetterWhitelistBungee extends Plugin {
 
     private static BetterWhitelistBungee instance;
-
     public static BetterWhitelistBungee getInstance() {
         return instance;
     }
 
-    public InstanceMessenger bungee = new InstanceMessenger(this);
-    public SQLConnection sql = new SQLConnection(this);
-    public WhitelistBot bot;
-
-    public ConfigManager configManager;
-
+    // Spigot only calls the constructor method once, so this should work.
     public BetterWhitelistBungee() {
         instance = this;
     }
 
     @Override
     public void onEnable() {
-        configManager = new ConfigManager(this);
-        bot = WhitelistBot.getInstance();
+        getProxy().registerChannel(InstanceMessenger.getChannel());
+        getProxy().getPluginManager().registerListener(this, InstanceMessenger.getInstance());
 
-        getProxy().registerChannel(bungee.channel);
-        getProxy().getPluginManager().registerListener(this, bungee);
+        WhitelistBot.getInstance().start();
+        getLogger().info("[discord] Spawned WhitelistBot thread.");
 
-        bot.init();
-        sql.checkTable();
+        SQLConnection.checkTable();
 
-        getLogger().info("Proxy messaging & whitelist initialized.");
-        getLogger().info("Will use plugin channel '" + bungee.channel + "' for plugin messaging.");
+        getLogger().info("Will use channel '" + InstanceMessenger.getChannel() + "' for plugin messaging.");
+    }
+
+    @Override
+    public void onDisable() {
+        PluginConfig.saveConfig();
+        getProxy().unregisterChannel(InstanceMessenger.getChannel());
     }
 }

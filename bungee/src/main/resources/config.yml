@@ -1,5 +1,5 @@
 discord:
-  token: insert token here
-  prefix: !
+  token: discord token here
+  prefix: '-'
 
 enableSql: false

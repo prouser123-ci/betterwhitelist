@@ -1,5 +1,7 @@
 package com.dumbdogdiner.betterwhitelist_bungee.discord.lib;
 
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,45 +9,42 @@ import java.util.List;
  * Represents a user-runnable command.
  */
 public abstract class Command {
-    private static String name = "Command";
+
+    protected static String name = "Command";
+    public static String getName() {
+        return name;
+    }
 
     private List<CommandInhibitor> inhibitors = new ArrayList<>();
     public List<CommandInhibitor> getInibitors() {
         return inhibitors;
     }
 
-    public abstract boolean run(Context ctx, String... args);
+    public abstract boolean run(MessageReceivedEvent e, String... args);
 
     /**
      * Trigger a command to be run.
-     * @param ctx
+     * @param e
      * @return
      */
-    public boolean execute(Context ctx, String... args) {
+    public boolean execute(MessageReceivedEvent e, String... args) {
         for (var inhibitor : inhibitors) {
-            if (!inhibitor.inhibit(this, ctx)) {
+            if (!inhibitor.inhibit(this, e)) {
                 return true;
             }
         }
 
-        return this.run(ctx, args);
+        return this.run(e, args);
     }
 
-    /**
-     * Fetch the name of the command.
-     * @return
-     */
-    public String getName() {
-        return name;
-    }
 
     /**
      * Add inhibitors to the command.
-     * @param inhibitors
+     * @param inhibitorsToAdd
      */
-    protected void useInhibitor(CommandInhibitor... inhibitors) {
-        for (CommandInhibitor inhibitor : inhibitors) {
-            getInibitors().add(inhibitor);
+    protected void useInhibitor(CommandInhibitor... inhibitorsToAdd) {
+        for (CommandInhibitor inhibitor : inhibitorsToAdd) {
+            inhibitors.add(inhibitor);
         }
     }
 }

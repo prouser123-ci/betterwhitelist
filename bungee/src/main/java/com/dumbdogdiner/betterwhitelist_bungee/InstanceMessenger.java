@@ -12,17 +12,28 @@ import java.io.IOException;
  * A class with methods for communicating between server instances.
  */
 public class InstanceMessenger implements Listener {
-    public BetterWhitelistBungee plugin;
 
-    public String channel = "btw:bungee";
-    public Boolean didFail = false;
-
-    public InstanceMessenger(BetterWhitelistBungee plugin) {
-        this.plugin = plugin;
+    private static String channel = "btw:bungee";
+    public static String getChannel() {
+        return channel;
     }
 
+    private static Boolean didFail = false;
+
+    private static InstanceMessenger instance;
+    public static InstanceMessenger getInstance() {
+        if (instance != null) {
+            return instance;
+        }
+
+        return instance = new InstanceMessenger();
+    }
+
+    private InstanceMessenger() { }
+
     @EventHandler
-    public void on(PluginMessageEvent e) {
+    public static void on(PluginMessageEvent e) {
+        var plugin = BetterWhitelistBungee.getInstance();
 
         plugin.getLogger().info(String.format("Received %d bytes on channel '%s'.", e.getData().length, e.getTag()));
 

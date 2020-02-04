@@ -10,6 +10,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class ReadyListener extends ListenerAdapter {
     @Override
     public void onReady(ReadyEvent event) {
-        WhitelistBot.getInstance().logger.info("Discord bot has entered the READY state.");
+        // WhitelistBot.getLogger().info("Discord bot has entered the READY state.");
     }
 }

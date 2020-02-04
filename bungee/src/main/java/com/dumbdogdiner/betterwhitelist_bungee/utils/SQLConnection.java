@@ -9,30 +9,23 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class SQLConnection {
-    private String sqlHost;
-    private String sqlDatabase;
-    private String sqlPort;
-    private String sqlUsername;
-    private String sqlPassword;
 
-    public BetterWhitelistBungee plugin;
+    private static String sqlHost = PluginConfig.getConfig().getString("mysql.host");
+    private static String sqlDatabase = PluginConfig.getConfig().getString("mysql.database");
+    private static String sqlPort = PluginConfig.getConfig().getString("mysql.port");
+    private static String sqlUsername = PluginConfig.getConfig().getString("mysql.username");
+    private static String sqlPassword = PluginConfig.getConfig().getString("mysql.password");
 
-    public SQLConnection(BetterWhitelistBungee plugin) {
-        this.plugin = plugin;
+    private static Boolean enabled = PluginConfig.getConfig().getBoolean("enableSql");
 
-        // TODO: Fix this
-        if (!plugin.configManager.getConfig().getBoolean("enableSql")) {
+    private SQLConnection() { }
+
+    public static void checkTable() {
+        if (!enabled) {
+            BetterWhitelistBungee.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
             return;
         }
 
-        sqlHost = plugin.configManager.getConfig().getString("mysql.host");
-        sqlDatabase = plugin.configManager.getConfig().getString("mysql.database");
-        sqlPort = plugin.configManager.getConfig().getString("mysql.port");
-        sqlUsername = plugin.configManager.getConfig().getString("mysql.username");
-        sqlPassword = plugin.configManager.getConfig().getString("mysql.password");
-    }
-
-    public void checkTable() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             Connection con = DriverManager.getConnection("jdbc:mysql://" + sqlHost + ":"+ sqlPort + "/" + sqlDatabase, sqlUsername, sqlPassword);
@@ -50,7 +43,7 @@ public class SQLConnection {
 
     }
 
-    public String getDiscordIDFromMinecraft(String pUUID) {
+    public static String getDiscordIDFromMinecraft(String pUUID) {
         try{
 
             Class.forName("com.mysql.jdbc.Driver");
@@ -77,7 +70,7 @@ public class SQLConnection {
 
     }
 
-    public String getMinecraftFromDiscordID(String pDiscorID) {
+    public static String getMinecraftFromDiscordID(String pDiscorID) {
         try{
 
             Class.forName("com.mysql.jdbc.Driver");
@@ -105,7 +98,7 @@ public class SQLConnection {
 
     }
 
-    public void addEntry(String pUUID, String pdiscordID) {
+    public static void addEntry(String pUUID, String pdiscordID) {
         try{
 
             Class.forName("com.mysql.jdbc.Driver");
@@ -124,7 +117,7 @@ public class SQLConnection {
         }
     }
 
-    public void removeEntry(String discordID) {
+    public static void removeEntry(String discordID) {
         try{
 
             Class.forName("com.mysql.jdbc.Driver");
