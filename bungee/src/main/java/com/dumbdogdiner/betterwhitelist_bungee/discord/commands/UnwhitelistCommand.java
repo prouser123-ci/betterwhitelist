@@ -18,8 +18,15 @@ public class UnwhitelistCommand extends Command {
 
     @Override
     public void run(MessageReceivedEvent e, String... args) {
-        // TODO: Check why the user lookup failed.
-        e.getChannel().sendTyping().queue();
+        e.getChannel().sendTyping().queue(
+                ((success) -> {
+                    WhitelistBot.getLogger().info("Player Unwhitelisted successfully");
+                }),
+                (failure) -> {
+                    WhitelistBot.getLogger().info(
+                            MessageFormat.format("Unwhitelisting failed! Reason: {0}", failure.getMessage()));
+                });
+
 
         if (SQLConnection.removeEntry(e.getMessageId())) {
           e.getChannel()
