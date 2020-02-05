@@ -1,12 +1,17 @@
 package com.dumbdogdiner.betterwhitelist_bungee.discord.commands;
 
+import com.dumbdogdiner.betterwhitelist_bungee.discord.WhitelistBot;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.lib.Command;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.SQLConnection;
+import com.sun.media.jfxmedia.logging.Logger;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class Unwhitelist extends Command {
+import java.text.MessageFormat;
+import java.util.function.Consumer;
 
-    public Unwhitelist() {
+public class UnwhitelistCommand extends Command {
+
+    public UnwhitelistCommand() {
         this.name = "unwhitelist";
         this.description = "Remove yourself from the whitelist of the Minecraft server.";
     }
