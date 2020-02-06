@@ -87,9 +87,9 @@ public class SQLConnection {
 
             // Return the first result.
             while(result.next()) {
-                String discordID = result.getString(1);
+                var id = result.getString(1);
                 statement.getConnection().close();
-                return discordID;
+                return id;
             }
             return null;
         }
@@ -116,8 +116,9 @@ public class SQLConnection {
             var result = statement.executeQuery("select minecraft_uuid from minecraft_whitelist where discordID = " + discordID);
 
             while(result.next()) {
+                var uuid = result.getString(1);
                 statement.getConnection().close();
-                return result.getString(1);
+                return uuid;
             }
             return null;
         }

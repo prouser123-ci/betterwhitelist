@@ -11,6 +11,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class BetterWhitelistCommand implements CommandExecutor {
@@ -128,7 +129,7 @@ public class BetterWhitelistCommand implements CommandExecutor {
         }
 
 
-        OfflinePlayer p = Bukkit.getPlayer(args[0]);
+        OfflinePlayer p = Bukkit.getPlayer(UUID.fromString(user.id));
 
         if(p != null) {
             if (!p.isWhitelisted()) {
