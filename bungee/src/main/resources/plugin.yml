@@ -1,4 +1,4 @@
 name: BetterWhitelistBungee
 version: ${project.version}
-authors: [kokumaji, fuzzyfoxie, vladfrangu]
+author: 'kokumaji, fuzzyfoxie, vladfrangu, Waffaru'
 main: com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungee

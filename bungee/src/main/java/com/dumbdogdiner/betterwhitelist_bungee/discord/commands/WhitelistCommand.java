@@ -5,13 +5,12 @@ import com.dumbdogdiner.betterwhitelist_bungee.discord.lib.Command;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.PluginConfig;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.SQLConnection;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.UsernameValidator;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class WhitelistCommand extends Command {
 
     public WhitelistCommand() {
-        this.name = "minecraft";
+        this.name = "whitelist";
         this.description = "Add yourself to the whitelist of the Minecraft server.";
         this.syntax = "<username>";
     }
@@ -105,7 +104,7 @@ public class WhitelistCommand extends Command {
      * @param e
      */
     private void addGrantedRole(MessageReceivedEvent e) {
-        if (!PluginConfig.getConfig().getBoolean("discord.roles.grantedRole.enabled")) {
+        if (PluginConfig.getConfig().getBoolean("discord.roles.grantedRole.enabled")) {
             try {
                 var roleId = PluginConfig.getConfig().getString("discord.roles.grantedRole.roleId");
                 var role = e.getGuild().getRoleById(roleId);
