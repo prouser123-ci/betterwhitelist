@@ -4,9 +4,6 @@ import com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungee;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.WhitelistBot;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.PluginConfig;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.SQLConnection;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -22,7 +19,6 @@ public class GuildEventListener extends ListenerAdapter {
     @Override
     public void onGuildMemberLeave(@Nonnull GuildMemberLeaveEvent e) {
         disconnectWithMessage(
-            e.getGuild(),
             e.getUser().getId(),
             ChatColor.RED + "You have left " + e.getGuild().getName() + " and have been removed from the whitelist!"
         );
@@ -31,7 +27,6 @@ public class GuildEventListener extends ListenerAdapter {
     @Override
     public void onGuildBan(GuildBanEvent e) {
         disconnectWithMessage(
-                e.getGuild(),
                 e.getUser().getId(),
                 ChatColor.RED + "You were banned from " + e.getGuild().getName() + " and have been removed from the whitelist!"
         );
@@ -39,11 +34,10 @@ public class GuildEventListener extends ListenerAdapter {
 
     /**
      * Disconnect a Discord member (if they are connected) with a given message.
-     * @param guild
      * @param id
      * @param message
      */
-    private static void disconnectWithMessage(Guild guild, String id, String message) {
+    private static void disconnectWithMessage(String id, String message) {
         if (!PluginConfig.getConfig().getBoolean("enableBanSync")) {
             WhitelistBot.getLogger().info("[discord] Not removing user '" + id + "' from whitelist - enableBanSync=false");
             return;

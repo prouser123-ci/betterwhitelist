@@ -1,7 +1,7 @@
 package com.dumbdogdiner.betterwhitelist_bungee;
 
 import com.dumbdogdiner.betterwhitelist_bungee.discord.WhitelistBot;
-import com.dumbdogdiner.betterwhitelist_bungee.listeners.PlayerJoinListener;
+import com.dumbdogdiner.betterwhitelist_bungee.listeners.PlayerEventListener;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.PluginConfig;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.SQLConnection;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -26,7 +26,7 @@ public class BetterWhitelistBungee extends Plugin {
         getProxy().registerChannel(InstanceMessenger.getChannel());
         getProxy().getPluginManager().registerListener(this, InstanceMessenger.getInstance());
 
-        getProxy().getPluginManager().registerListener(this, new PlayerJoinListener());
+        getProxy().getPluginManager().registerListener(this, new PlayerEventListener());
 
         WhitelistBot.getInstance().init();
         getLogger().info("[discord] Spawned WhitelistBot thread.");

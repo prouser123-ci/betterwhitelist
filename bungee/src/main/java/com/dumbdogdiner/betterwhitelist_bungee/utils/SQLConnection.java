@@ -11,8 +11,9 @@ public class SQLConnection {
     private static String databaseUrl = String.format(
             "jdbc:mysql://%s:%s/%s",
             PluginConfig.getConfig().getString("mysql.host"),
-            PluginConfig.getConfig().getString("mysql.database"),
-            PluginConfig.getConfig().getString("mysql.port")
+            PluginConfig.getConfig().getString("mysql.port"),
+            PluginConfig.getConfig().getString("mysql.database")
+
     );
 
     private static String sqlUsername = PluginConfig.getConfig().getString("mysql.username");
@@ -42,11 +43,16 @@ public class SQLConnection {
         return;
     }
 
+    /**
+     * Check that the SQL table storing player UUIDs is valid.
+     */
     public static void checkTable() {
         if (!enabled) {
             BetterWhitelistBungee.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
             return;
         }
+
+        BetterWhitelistBungee.getInstance().getLogger().info("[sql] Checking the UUID table is valid...");
 
         try {
             var statement = createStatement();
