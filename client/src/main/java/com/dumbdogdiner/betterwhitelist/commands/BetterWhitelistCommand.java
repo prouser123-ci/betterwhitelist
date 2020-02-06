@@ -1,31 +1,29 @@
-package com.dumbdogdiner.betterwhitelist_client.commands;
+package com.dumbdogdiner.betterwhitelist.commands;
 
-import com.dumbdogdiner.betterwhitelist_client.BetterWhitelist;
-import com.dumbdogdiner.betterwhitelist_client.utils.Permissions;
-import com.dumbdogdiner.betterwhitelist_client.utils.URLRequest;
+import com.dumbdogdiner.betterwhitelist.BetterWhitelist;
+import com.dumbdogdiner.betterwhitelist.utils.Permissions;
+import com.dumbdogdiner.betterwhitelist.utils.UsernameValidator;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.Arrays;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class BetterWhitelistCommand implements CommandExecutor {
-    private FileConfiguration plConf = BetterWhitelist.getInstance().getConfig();
 
-    private String[][] helpMessages = {
+    private static String[][] helpMessages = {
             {"/btw reload", "Reloads the plugin and its configuration."},
             {"/btw help", "Display this help message :3"},
             {"/btw whois <user>", "Fetch cross-server information about a user."},
-            {"/btw list [page=0]>", "Display users whitelisted across the entire network."},
+            {"/btw list [page=0]", "Display users whitelisted across the entire network."},
             {"/btw add <user>", "Add a player to the whitelist."},
             {"/btw remove <user>", "Remove a player from the whitelist."}
     };
+
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -122,21 +120,11 @@ public class BetterWhitelistCommand implements CommandExecutor {
             return false;
         }
 
-        int response = 0;
-        try {
-            response = URLRequest.checkUsername(args[1]);
-            Bukkit.getLogger().log(Level.FINE, "Request to Mojang API returned response code " + response);
-        } catch (Exception e1) {
-            e1.printStackTrace();
-            return false;
-        }
+        var user = UsernameValidator.getUser(args[1]);
 
-        if (response != 200) {
-            sender.sendMessage(ChatColor.RED + "if (!banSyncEnabled) {\n" +
-                    "            plugin.getLogger().info(String.format(\"Not checking if '%u' should be banned - banSyncEnabled=false\", e.getPlayer().getUniqueId().toString()));\n" +
-                    "            return;\n" +
-                    "        }This player does not exist!");
-            return false;
+        if (user.id == null) {
+            sender.sendMessage(ChatColor.RED + "User could not be found!");
+            return true;
         }
 
 
@@ -152,8 +140,6 @@ public class BetterWhitelistCommand implements CommandExecutor {
 
 
             // TODO: BungeeCord messaging.
-
-
 
             sender.sendMessage(ChatColor.GREEN + "Removed " + p.getName() + " from the whitelist!");
             if (p.isOnline()) {

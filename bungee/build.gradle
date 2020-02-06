@@ -42,5 +42,5 @@ shadowJar {
     minimize()
 }
 
-apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'

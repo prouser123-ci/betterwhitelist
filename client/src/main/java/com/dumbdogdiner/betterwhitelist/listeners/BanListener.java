@@ -1,7 +1,7 @@
-package com.dumbdogdiner.betterwhitelist_client.listeners;
+package com.dumbdogdiner.betterwhitelist.listeners;
 
-import com.dumbdogdiner.betterwhitelist_client.BetterWhitelist;
-import org.bukkit.Bukkit;
+import com.dumbdogdiner.betterwhitelist.BetterWhitelist;
+import com.dumbdogdiner.betterwhitelist.utils.SQLConnection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,7 +20,6 @@ public class BanListener implements Listener {
     @EventHandler
     public void onPlayerBan(PlayerQuitEvent e) {
 
-
         Player target = e.getPlayer();
 
         if (!banSyncEnabled) {
@@ -32,22 +31,9 @@ public class BanListener implements Listener {
             return;
         }
 
-        // Attempt to tell Bungee - need to have an online player to send messages.
-        Player receiver;
-        if (target.isOnline()) {
-            receiver = target;
-        } else {
-            receiver = Bukkit.getOnlinePlayers().iterator().next();
+        var uuid = e.getPlayer().getUniqueId().toString();
+        if (SQLConnection.removeEntryUsingUuid(uuid)) {
+            BetterWhitelist.getInstance().getLogger().info("Removed user with Discord ID '" + uuid + "' from the whitelist.");
         }
-
-        if (!receiver.isOnline()) {
-            BetterWhitelist.getInstance().getLogger().info("No players are online - cannot inform Bungee of ban. Caching until somebody joins...");
-            // TODO: Add cache.
-            return;
-        }
-
-
-        // TODO: Check if player is banned with BungeeCord.
-        BetterWhitelist.getInstance().bungee.addGlobalBan(receiver, target.getUniqueId());
     }
 }

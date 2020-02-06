@@ -1,10 +1,14 @@
-package com.dumbdogdiner.betterwhitelist_client;
+package com.dumbdogdiner.betterwhitelist;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import me.lucko.commodore.Commodore;
+import me.lucko.commodore.CommodoreProvider;
+import me.lucko.commodore.file.CommodoreFileFormat;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -174,8 +178,7 @@ public class BungeeMessenger implements PluginMessageListener {
     /**
      * Checks if the server is running BungeeCord.
      */
-    private Boolean checkIfBungee()
-    {
+    private Boolean checkIfBungee() {
         var logger = BetterWhitelist.getInstance().getLogger();
         var server = BetterWhitelist.getInstance().getServer();
 

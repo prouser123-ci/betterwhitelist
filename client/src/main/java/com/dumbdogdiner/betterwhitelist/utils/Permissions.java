@@ -1,6 +1,5 @@
-package com.dumbdogdiner.betterwhitelist_client.utils;
+package com.dumbdogdiner.betterwhitelist.utils;
 
-import com.dumbdogdiner.betterwhitelist_client.BetterWhitelist;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
