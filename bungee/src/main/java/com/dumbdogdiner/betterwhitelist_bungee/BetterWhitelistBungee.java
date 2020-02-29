@@ -24,11 +24,6 @@ public class BetterWhitelistBungee extends Plugin {
 
     @Override
     public void onEnable() {
-        // TODO: See if plugin messaging is actually even needed for what we're trying to do.
-        // getProxy().registerChannel(InstanceMessenger.getChannel());
-        // getProxy().getPluginManager().registerListener(this, InstanceMessenger.getInstance());
-        // getLogger().info("Will use channel '" + InstanceMessenger.getChannel() + "' for plugin messaging.");
-
         getProxy().getPluginManager().registerListener(this, new PlayerEventListener());
         getProxy().getPluginManager().registerCommand(this, new WhoisCommand());
 
@@ -40,8 +35,6 @@ public class BetterWhitelistBungee extends Plugin {
     @Override
     public void onDisable() {
         PluginConfig.saveConfig();
-        // getProxy().unregisterChannel(InstanceMessenger.getChannel());
-        // Redundant: getProxy().getPluginManager().unregisterListeners(this);
         getLogger().info("Aarrff!! (see you again soon :3)");
     }
 }
