@@ -1,5 +1,7 @@
 package com.dumbdogdiner.betterwhitelist_bungee.bungee.listeners;
 
+import com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungee;
+import com.dumbdogdiner.betterwhitelist_bungee.utils.PluginConfig;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.SQLConnection;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -16,6 +18,7 @@ public class PlayerEventListener implements Listener {
      * Check whether players are allowed to log in.
      */
     public void onPlayerLogin(PostLoginEvent e) {
+
        var uuid = e.getPlayer().getUniqueId().toString();
 
        if (SQLConnection.getDiscordIDFromMinecraft(uuid) == null) {

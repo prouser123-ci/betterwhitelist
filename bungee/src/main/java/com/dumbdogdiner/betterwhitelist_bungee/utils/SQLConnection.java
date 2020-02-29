@@ -13,7 +13,7 @@ public class SQLConnection {
     // TODO: Use a pooled connection.
 
     private static String databaseUrl = String.format(
-            "jdbc:mysql://%s:%s/%s",
+            "jdbc:mysql://%s:%s/%s?useSSL=false",
             PluginConfig.getConfig().getString("mysql.host"),
             PluginConfig.getConfig().getString("mysql.port"),
             PluginConfig.getConfig().getString("mysql.database")
@@ -77,7 +77,7 @@ public class SQLConnection {
      */
     public static String getDiscordIDFromMinecraft(String uuid) {
         if (!enabled) {
-            BetterWhitelistBungee.getInstance().getLogger().warning("SQL connection has- been disabled in 'config.yml'.");
+            BetterWhitelistBungee.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
             return null;
         }
 

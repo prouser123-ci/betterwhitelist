@@ -38,19 +38,22 @@ public class GuildEventListener extends ListenerAdapter {
      * @param message
      */
     private static void disconnectWithMessage(String id, String message) {
-        if (!PluginConfig.getConfig().getBoolean("enableBanSync")) {
+        if (!PluginConfig.getConfig().getBoolean("discord.enableBanSync")) {
             WhitelistBot.getLogger().info("[discord] Not removing user '" + id + "' from whitelist - enableBanSync=false");
             return;
         }
 
         // Disconnect the player if they are connected.
         var playerUuid = SQLConnection.getUuidFromDiscordId(id);
-        if (playerUuid != null) {
-            var player = BetterWhitelistBungee.getInstance().getProxy().getPlayer(playerUuid);
-            if (player != null) {
-                player.disconnect(new TextComponent(message));
-            }
+        if (playerUuid == null) {
+            return;
         }
+
+        WhitelistBot.getLogger().info("[discord][ban] Disconnecting player if they are still online...");
+
+        // TODO: Fix this
+        var player = BetterWhitelistBungee.getInstance().getProxy().getPlayer(playerUuid);
+        player.disconnect(new TextComponent(message));
 
         if (SQLConnection.removeEntry(id)) {
             WhitelistBot.getLogger().info("[discord][ban] Removed user with Discord ID '" + id + "' from the whitelist.");
