@@ -43,7 +43,7 @@ public class WhitelistCommand extends Command {
 
         if (
             SQLConnection.getUuidFromDiscordId(e.getAuthor().getId()) != null &&
-            PluginConfig.getConfig().getBoolean("oneAccountPerUser")
+            PluginConfig.getConfig().getBoolean("discord.oneAccountPerUser")
         ) {
             e.getChannel()
                 .sendMessage(":x: **Failed to verify!** You already have a Minecraft account whitelisted - you can unwhitelist it by running `-unwhitelist`.")

@@ -41,7 +41,7 @@ public class UsernameValidator {
         var result = new Gson().fromJson(json, MojangUser.class);
         result.id = hyphenateUUID(result.id);
 
-        BetterWhitelistBungee.getInstance().getLogger().info(String.format("Got UUID '%s' for user '%s'.", result.id, result.name));
+        BetterWhitelistBungee.getInstance().getLogger().info(String.format("Got UUID '%s' for user '%s' from Mojang API.", result.id, result.name));
 
         return result;
     }

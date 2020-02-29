@@ -16,17 +16,9 @@ public class UnwhitelistCommand extends Command {
 
     @Override
     public void run(MessageReceivedEvent e, String... args) {
-        e.getChannel().sendTyping().queue(
-                ((success) -> {
-                    WhitelistBot.getLogger().info("Player Unwhitelisted successfully");
-                }),
-                (failure) -> {
-                    WhitelistBot.getLogger().info(
-                            MessageFormat.format("Unwhitelisting failed! Reason: {0}", failure.getMessage()));
-                });
+        e.getChannel().sendTyping().queue();
 
-
-        if (SQLConnection.removeEntry(e.getMessageId())) {
+        if (SQLConnection.removeEntry(e.getAuthor().getId())) {
           e.getChannel()
               .sendMessage(":white_check_mark: **You were removed from the whitelist!**")
               .queue();
