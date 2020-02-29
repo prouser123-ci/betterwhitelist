@@ -25,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'net.md-5', name: 'bungeecord-api', version: '1.14-SNAPSHOT'
+    implementation group: 'net.md-5', name: 'bungeecord-api', version: '1.15-SNAPSHOT'
 
     compile ('net.dv8tion:JDA:4.1.1_105') {
         exclude module: 'opus-java'

@@ -11,6 +11,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
 import javax.annotation.Nonnull;
+import java.util.UUID;
 
 /**
  * Listener that waits for members to leave/be banned and removes them from the Minecraft whitelist.
@@ -49,10 +50,13 @@ public class GuildEventListener extends ListenerAdapter {
             return;
         }
 
-        WhitelistBot.getLogger().info("[discord][ban] Disconnecting player if they are still online...");
-
         // TODO: Fix this
-        var player = BetterWhitelistBungee.getInstance().getProxy().getPlayer(playerUuid);
+        var player = BetterWhitelistBungee.getInstance().getProxy().getPlayer(UUID.fromString(playerUuid));
+        if (player == null) {
+            return;
+        }
+
+        WhitelistBot.getLogger().info("[discord][ban] Disconnecting player if they are still online...");
         player.disconnect(new TextComponent(message));
 
         if (SQLConnection.removeEntry(id)) {

@@ -13,7 +13,7 @@ public class SQLConnection {
     // TODO: Use a pooled connection.
 
     private static String databaseUrl = String.format(
-            "jdbc:mysql://%s:%s/%s?useSSL=false",
+            "jdbc:mysql://%s:%s/%s?useSSL=false&allowPublicKeyRetrieval=true",
             PluginConfig.getConfig().getString("mysql.host"),
             PluginConfig.getConfig().getString("mysql.port"),
             PluginConfig.getConfig().getString("mysql.database")
