@@ -1,20 +1,21 @@
 betterwhitelist {
-    reload;
-    help;
+       reload;
+       help;
 
-    whois {
-        user brigadier:string single_word;
-    }
+       whois {
+           user brigadier:string single_word;
+       }
 
-    add {
-        user brigadier:string single_word;
-    }
+       add {
+           username brigadier:string single_word;
+           id brigadier:string single_word;
+       }
 
-    remove {
-        user brigadier:string single_word;
-    }
+       remove {
+           user brigadier:string single_word;
+       }
 
-    list {
-        page brigadier:integer;
-    }
-}
+       list {
+           page brigadier:integer;
+       }
+   }

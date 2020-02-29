@@ -2,8 +2,8 @@ package com.dumbdogdiner.betterwhitelist.utils;
 
 import com.dumbdogdiner.betterwhitelist.BetterWhitelist;
 
-import java.sql.DriverManager;
-import java.sql.Statement;
+import java.sql.*;
+
 
 /**
  * SQL wrapper for fetching/storing user whitelist data.
@@ -13,7 +13,7 @@ public class SQLConnection {
     // TODO: Use a pooled connection.
 
     private static String databaseUrl = String.format(
-            "jdbc:mysql://%s:%s/%s",
+            "jdbc:mysql://%s:%s/%s?useSSL=false&allowPublicKeyRetrieval=true",
             BetterWhitelist.getInstance().getConfig().getString("mysql.host"),
             BetterWhitelist.getInstance().getConfig().getString("mysql.port"),
             BetterWhitelist.getInstance().getConfig().getString("mysql.database")
@@ -42,9 +42,8 @@ public class SQLConnection {
     }
 
     private static void handleSQLError(Exception e) {
-        BetterWhitelist.getInstance().getInstance().getLogger().severe("Failed to execute SQL statement.");
+        BetterWhitelist.getInstance().getLogger().severe("Failed to execute SQL statement.");
         e.printStackTrace();
-        return;
     }
 
     /**
@@ -83,12 +82,15 @@ public class SQLConnection {
 
         try {
             var statement = createStatement();
-            var result = statement.executeQuery("select discordID from minecraft_whitelist where minecraft_uuid = '" + uuid + "'");
+            var result = statement.executeQuery("SELECT `discordID` FROM `minecraft_whitelist` WHERE `minecraft_uuid`='" + uuid + "'");
 
             // Return the first result.
             while(result.next()) {
                 var id = result.getString(1);
                 statement.getConnection().close();
+
+                // BetterWhitelistBungee.getInstance().getLogger().info("Got '" + uuid + "' for UUID '" + uuid + "'.");
+
                 return id;
             }
             return null;
@@ -113,13 +115,16 @@ public class SQLConnection {
 
         try {
             var statement = createStatement();
-            var result = statement.executeQuery("select minecraft_uuid from minecraft_whitelist where discordID = " + discordID);
+            var result = statement.executeQuery("SELECT `minecraft_uuid` FROM `minecraft_whitelist` WHERE `discordID`='" + discordID + "'");
 
-            while(result.next()) {
+            if (result.next()) {
                 var uuid = result.getString(1);
                 statement.getConnection().close();
+
+                // BetterWhitelistBungee.getInstance().getLogger().info("Got '" + uuid + "' for ID '" + discordID + "'.");
                 return uuid;
             }
+
             return null;
         }
 
@@ -142,8 +147,11 @@ public class SQLConnection {
 
         try {
             var statement = createStatement();
-            statement.executeUpdate("INSERT IGNORE INTO minecraft_whitelist (discordID, minecraft_uuid) VALUES ('" + discordID + "','" + uuid + "');");
+            statement.executeUpdate("INSERT IGNORE INTO `minecraft_whitelist` (`discordID`, `minecraft_uuid`) VALUES ('" + discordID + "','" + uuid + "');");
             statement.getConnection().close();
+
+            BetterWhitelist.getInstance().getLogger().info("Added whitelist entry: '" + discordID +"' => '"+ uuid + "'");
+
             return true;
         }
 
@@ -163,10 +171,19 @@ public class SQLConnection {
             return false;
         }
 
+        // Check to make sure entry exists to be removed.
+        if (getUuidFromDiscordId(discordID) == null) {
+            BetterWhitelist.getInstance().getLogger().warning("Request to remove non-existent whitelist entry for ID '"+ discordID +"'.");
+            return false;
+        }
+
         try {
             var statement = createStatement();
-            statement.executeUpdate("DELETE FROM `minecraft_whitelist` WHERE `discordID` = '" + discordID + "'");
+            statement.executeUpdate("DELETE FROM `minecraft_whitelist` WHERE `discordID`='" + discordID + "'");
             statement.getConnection().close();
+
+            BetterWhitelist.getInstance().getLogger().info("Removed whitelist entry: '" + discordID +"'");
+
             return true;
         }
 
@@ -188,7 +205,7 @@ public class SQLConnection {
 
         try {
             var statement = createStatement();
-            statement.executeUpdate("DELETE FROM `minecraft_whitelist` WHERE `minecraft_uuid` = '" + uuid + "'");
+            statement.executeUpdate("DELETE FROM `minecraft_whitelist` WHERE `minecraft_uuid`='" + uuid + "'");
             statement.getConnection().close();
             return true;
         }

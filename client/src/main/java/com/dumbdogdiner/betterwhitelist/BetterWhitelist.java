@@ -35,11 +35,6 @@ public class BetterWhitelist extends JavaPlugin {
         // Register event listeners.
         Bukkit.getPluginManager().registerEvents(new BanListener(), this);
 
-        // Register proxy messenger.
-        // bungee = new BungeeMessenger();
-        // getServer().getMessenger().registerOutgoingPluginChannel(this, bungee.getChannel());
-        // getServer().getMessenger().registerIncomingPluginChannel(this, bungee.getChannel(), bungee);
-
         // Register commands.
         PluginCommand command = getCommand("betterwhitelist");
 
@@ -58,7 +53,6 @@ public class BetterWhitelist extends JavaPlugin {
         SQLConnection.checkTable();
 
         getLogger().info("Initialization complete >w<");
-        // getLogger().info("Will use plugin channel '" + bungee.getChannel() + "' for plugin messaging.");
     }
 
     /**

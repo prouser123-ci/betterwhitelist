@@ -2,6 +2,7 @@ package com.dumbdogdiner.betterwhitelist.commands;
 
 import com.dumbdogdiner.betterwhitelist.BetterWhitelist;
 import com.dumbdogdiner.betterwhitelist.utils.Permissions;
+import com.dumbdogdiner.betterwhitelist.utils.SQLConnection;
 import com.dumbdogdiner.betterwhitelist.utils.UsernameValidator;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -9,7 +10,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
+import java.lang.reflect.Member;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -17,10 +20,10 @@ import java.util.stream.Collectors;
 public class BetterWhitelistCommand implements CommandExecutor {
 
     private static String[][] helpMessages = {
-            {"/btw reload", "Reloads the plugin and its configuration."},
             {"/btw help", "Display this help message :3"},
-            {"/btw whois <user>", "Fetch cross-server information about a user."},
+            {"/btw reload", "Reloads the plugin and its configuration."},
             {"/btw list [page=0]", "Display users whitelisted across the entire network."},
+            {"/btw whois <user>", "Fetch cross-server information about a user."},
             {"/btw add <user>", "Add a player to the whitelist."},
             {"/btw remove <user>", "Remove a player from the whitelist."}
     };
@@ -44,11 +47,20 @@ public class BetterWhitelistCommand implements CommandExecutor {
 
         // Handle commands
         switch(subCommand) {
-            case "list":
-                return list(sender, commandArgs);
-
             case "reload":
                 return reload(sender, commandArgs);
+
+            case "list":
+                return list(sender);
+
+            case "whois":
+                return whois(sender, args);
+
+            case "add":
+                return add(sender, args);
+
+            case "remove":
+                return remove(sender, args);
 
             default:
                 return help(sender, commandArgs);
@@ -90,21 +102,100 @@ public class BetterWhitelistCommand implements CommandExecutor {
         }
 
         BetterWhitelist.getInstance().reloadConfig();
-        sender.sendMessage(ChatColor.GREEN + "Config reloaded!");
+        sender.sendMessage(ChatColor.AQUA + "[BetterWhitelist] Config reloaded!");
         return true;
     }
 
     /**
      * List whitelisted players.
      * @param sender
-     * @param args
      * @return
      */
-    private boolean list(CommandSender sender, String[] args) {
+    private boolean list(CommandSender sender) {
         var names = Bukkit.getWhitelistedPlayers().stream().map(p -> p.getName()).collect(Collectors.toList());
 
         sender.sendMessage("There are currently " + names.size() + " players whitelisted: "
                 + String.join(", ", names));
+
+        return true;
+    }
+
+    /**
+     * Look up a user.
+     * TODO: Dedupe.
+     * @param sender
+     * @param args
+     * @return
+     */
+    private boolean whois(CommandSender sender, String[] args) {
+        if (args.length < 1) {
+            sender.sendMessage(ChatColor.RED + "Invalid arguments - syntax: <username/discord_id>");
+            return true;
+        }
+
+        // Fetch using username.
+        var player = BetterWhitelist.getInstance().getServer().getPlayer(args[0]);
+
+        if (player != null) {
+            return sendWhoisInformation(sender, player, SQLConnection.getDiscordIDFromMinecraft(player.getUniqueId().toString()));
+        }
+
+        // Fetch using discord ID.
+        var playerUUID = SQLConnection.getUuidFromDiscordId(args[0]);
+
+        if (playerUUID != null) {
+            player = BetterWhitelist.getInstance().getServer().getPlayer(playerUUID);
+            if (player != null) {
+                return sendWhoisInformation(sender, player, SQLConnection.getDiscordIDFromMinecraft(player.getUniqueId().toString()));
+            }
+        }
+
+        sender.sendMessage(ChatColor.AQUA + "Unable to find a user matching '"+ args[0] + "'.");
+
+        return true;
+    }
+
+    /**
+     * Send the whois information to the CommandSender.
+     * @param sender
+     * @param player
+     * @param discordID
+     */
+    private boolean sendWhoisInformation(CommandSender sender, Player player, String discordID) {
+        var isWhitelisted = discordID != null ? "Yes" : "No";
+
+        sender.sendMessage(ChatColor.AQUA + "Info for " + player.getName());
+        sender.sendMessage(ChatColor.AQUA + "UUID: " + ChatColor.WHITE + player.getUniqueId().toString());
+        sender.sendMessage(ChatColor.AQUA + "Discord ID: " + ChatColor.WHITE + discordID);
+        sender.sendMessage(ChatColor.AQUA + "Whitelisted: " + ChatColor.WHITE + isWhitelisted);
+
+        return true;
+    }
+
+    /**
+     * Add a specified player to the whitelist.
+     * @param sender
+     * @param args
+     * @return
+     */
+    private boolean add(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.RED + "Invalid arguments - syntax: <username> <discord_id>");
+            return true;
+        }
+
+        var user = UsernameValidator.getUser(args[0]);
+        var discordId = args[1];
+
+        if (user == null || user.id == null) {
+            sender.sendMessage(ChatColor.RED + "Unable to find a user of name '" + args[0] +"'.");
+        }
+
+        if (SQLConnection.addEntry(discordId, user.id)) {
+            sender.sendMessage(ChatColor.AQUA + "Mapped user '" + user.name +"' to Discord ID '" + discordId +"'.");
+        } else {
+            sender.sendMessage(ChatColor.RED + "Failed to map user - SQL update failed.");
+        }
 
         return true;
     }
