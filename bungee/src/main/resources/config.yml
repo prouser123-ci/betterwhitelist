@@ -2,6 +2,9 @@
 # be able to store whitelisted users.
 enableSql: false
 
+## Whether to disable checking for player UUIDs on join.
+disableUuidChecking: false
+
 # MySQL Database Details
 # The bot requires SELECT, INSERT, CREATE and DELETE privileges.
 mysql:

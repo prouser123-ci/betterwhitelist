@@ -1,15 +1,11 @@
 package com.dumbdogdiner.betterwhitelist_bungee.bungee.listeners;
 
 import com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungee;
-import com.dumbdogdiner.betterwhitelist_bungee.utils.MojangUser;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.PluginConfig;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.SQLConnection;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.UsernameValidator;
-import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.event.PlayerHandshakeEvent;
-import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -23,6 +19,17 @@ public class PlayerEventListener implements Listener {
      * Check whether players are allowed to log in.
      */
     public void onPreLoginEvent(PreLoginEvent e) {
+        if (PluginConfig.getConfig().getBoolean("disableUuidChecking")) {
+            BetterWhitelistBungee.getInstance().getLogger().info("Skipping handling new player connection - checking disabled.");
+            return;
+        }
+
+        var playerOverrides = PluginConfig.getConfig().getList("overrides");
+        if (playerOverrides.contains(e.getConnection().getName())) {
+            BetterWhitelistBungee.getInstance().getLogger().info("Skipping handling new player connection - user is in overrides.");
+            return;
+        }
+
         var user = UsernameValidator.getUser(e.getConnection().getName());
 
         if (user == null) {
