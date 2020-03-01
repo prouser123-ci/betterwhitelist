@@ -14,7 +14,7 @@ public class GetStatusCommand extends Command {
     @Override
     public void run(MessageReceivedEvent e, String... args) {
         e.getChannel().sendMessage(String.format(
-            "**Meep!! ^w^**\nPing: `%dms`",
+            "**Meep!! ^w^**\n> Ping: `%dms`",
             Math.round(WhitelistBot.getJda().getGatewayPing()
         ))).queue();
     }

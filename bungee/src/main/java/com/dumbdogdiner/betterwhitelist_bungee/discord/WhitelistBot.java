@@ -81,10 +81,10 @@ public class WhitelistBot {
             commands.values().stream().map(Command::getName).collect(Collectors.joining(", "))
         ));
 
-        builder.setActivity(Activity.watching("the cutest fluffs \uD83E\uDDE1"));
+        builder.setActivity(Activity.watching("the cutest fuzzballs \uD83E\uDDE1"));
 
         try {
-            getLogger().info("[discord] Using access token '" + PluginConfig.getConfig().getString("discord.token") + "'...");
+            getLogger().info("[discord] Attempting connection to Discord...");
             jda = builder.build();
         } catch (LoginException err) {
             getLogger().severe("[discord] WhitelistBot threw an error while trying to authenticate with Discord.");
@@ -95,8 +95,6 @@ public class WhitelistBot {
     /**
      * Configure flags for the JDABuilder. Saves memory :3
      * @param builder
-     *
-     * TODO: This breaks: "java.lang.ClassNotFoundException: net.dv8tion.jda.api.utils.cache.CacheFlag"
      */
 
     private static void configureMemory(JDABuilder builder) {

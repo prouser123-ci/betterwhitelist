@@ -50,7 +50,6 @@ public class GuildEventListener extends ListenerAdapter {
             return;
         }
 
-        // TODO: Fix this
         var player = BetterWhitelistBungee.getInstance().getProxy().getPlayer(UUID.fromString(playerUuid));
         if (player == null) {
             return;

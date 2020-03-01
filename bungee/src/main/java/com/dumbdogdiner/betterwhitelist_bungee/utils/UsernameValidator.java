@@ -14,24 +14,11 @@ public class UsernameValidator {
 
     /**
      * Fetch the UUID of a player from their Minecraft username.
-     * @param username
-     * @return
-     *
-     * TODO: This throws a whole bunch of warning errors into the console for seemingly no reason - e.g.
-     * HK2 service reification failed for [org.glassfish.jersey.message.internal.XmlRootElementJaxbProvider$General] with an exception:
-     *
-     * MultiException stack 1 of 2
-     * java.lang.NoClassDefFoundError: javax/xml/bind/JAXBException
-     *
-     * MultiException stack 2 of 2
-     * java.lang.IllegalArgumentException: Errors were discovered while reifying SystemDescriptor
-     *
-     * Both exceptions triggered by the get method in line 32.
-     * The code, however, works as intended.
+     * @param username The name of the user to fetch from the API.
+     * @return Mojang API user object
      */
     public static MojangUser getUser(String username) {
         // Make request to Mojang and decode JSON body.
-
         var json = fetchUserJson(username);
 
         if (json == null || json.equals("")) {
@@ -40,8 +27,6 @@ public class UsernameValidator {
 
         var result = new Gson().fromJson(json, MojangUser.class);
         result.id = hyphenateUUID(result.id);
-
-        // BetterWhitelistBungee.getInstance().getLogger().info(String.format("Got UUID '%s' for user '%s' from Mojang API.", result.id, result.name));
 
         return result;
     }

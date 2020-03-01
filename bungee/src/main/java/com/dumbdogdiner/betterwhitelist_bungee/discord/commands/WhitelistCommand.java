@@ -7,6 +7,7 @@ import com.dumbdogdiner.betterwhitelist_bungee.utils.PluginConfig;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.SQLConnection;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.UsernameValidator;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.md_5.bungee.api.plugin.Plugin;
 
 public class WhitelistCommand extends Command {
 
@@ -34,7 +35,7 @@ public class WhitelistCommand extends Command {
 
         if (args.length == 0 || args[0] == null) {
             e.getChannel().sendMessage(
-                ":x: **Whoops!** You didn't specify your MC username. Make sure you run the command in the format `-minecraft <username>`."
+                ":x: **Whoops!** You didn't specify your MC username. Make sure you run the command in the format `"+ PluginConfig.getPrefix() + "whitelist <username>`."
             ).queue();
            return;
         }
@@ -46,7 +47,7 @@ public class WhitelistCommand extends Command {
             PluginConfig.getConfig().getBoolean("discord.oneAccountPerUser")
         ) {
             e.getChannel()
-                .sendMessage(":x: **Failed to verify!** You already have a Minecraft account whitelisted - you can unwhitelist it by running `-unwhitelist`.")
+                .sendMessage(":x: **Failed to verify!** You already have a Minecraft account whitelisted - you can unwhitelist it by running `"+ PluginConfig.getPrefix() +"unwhitelist`.")
                 .queue();
             return;
         }

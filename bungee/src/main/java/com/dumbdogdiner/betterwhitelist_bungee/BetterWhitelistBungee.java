@@ -5,7 +5,6 @@ import com.dumbdogdiner.betterwhitelist_bungee.bungee.commands.WhitelistCommand;
 import com.dumbdogdiner.betterwhitelist_bungee.bungee.commands.WhoisCommand;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.WhitelistBot;
 import com.dumbdogdiner.betterwhitelist_bungee.bungee.listeners.PlayerEventListener;
-import com.dumbdogdiner.betterwhitelist_bungee.utils.PluginConfig;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.SQLConnection;
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -38,7 +37,12 @@ public class BetterWhitelistBungee extends Plugin {
 
     @Override
     public void onDisable() {
-        PluginConfig.saveConfig();
+        // Has the unfortunate downside of overriding changes made to the config.
+        // Temporarily disabled since config isn't modified anywhere else in the plugin.
+        /* PluginConfig.saveConfig(); */
+
+        // Shut down the Discord bot gracefully.
+        WhitelistBot.getJda().shutdown();
         getLogger().info("Aarrff!! (see you again soon :3)");
     }
 }
