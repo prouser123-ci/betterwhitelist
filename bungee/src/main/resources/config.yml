@@ -11,6 +11,10 @@ mysql:
   username: "root"
   password: "password"
 
+# Add player overrides
+overrides:
+  - skyefoxie
+
 discord:
   # Bot token the plugin should use.
   token: 'discord token here'
