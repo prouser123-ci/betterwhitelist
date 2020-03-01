@@ -1,6 +1,6 @@
-package com.dumbdogdiner.betterwhitelist_bungee.utils;
+package com.dumbdogdiner.betterwhitelist.utils;
 
-import com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungee;
+import com.dumbdogdiner.betterwhitelist.BetterWhitelist;
 
 import java.sql.*;
 
@@ -14,16 +14,16 @@ public class SQLConnection {
 
     private static String databaseUrl = String.format(
             "jdbc:mysql://%s:%s/%s?useSSL=false&allowPublicKeyRetrieval=true",
-            PluginConfig.getConfig().getString("mysql.host"),
-            PluginConfig.getConfig().getString("mysql.port"),
-            PluginConfig.getConfig().getString("mysql.database")
+            BetterWhitelist.getInstance().getConfig().getString("mysql.host"),
+            BetterWhitelist.getInstance().getConfig().getString("mysql.port"),
+            BetterWhitelist.getInstance().getConfig().getString("mysql.database")
 
     );
 
-    private static String sqlUsername = PluginConfig.getConfig().getString("mysql.username");
-    private static String sqlPassword = PluginConfig.getConfig().getString("mysql.password");
+    private static String sqlUsername = BetterWhitelist.getInstance().getConfig().getString("mysql.username");
+    private static String sqlPassword = BetterWhitelist.getInstance().getConfig().getString("mysql.password");
 
-    private static Boolean enabled = PluginConfig.getConfig().getBoolean("enableSql");
+    private static Boolean enabled = BetterWhitelist.getInstance().getConfig().getBoolean("enableSql");
 
     private SQLConnection() { }
 
@@ -42,7 +42,7 @@ public class SQLConnection {
     }
 
     private static void handleSQLError(Exception e) {
-        BetterWhitelistBungee.getInstance().getLogger().severe("Failed to execute SQL statement.");
+        BetterWhitelist.getInstance().getLogger().severe("Failed to execute SQL statement.");
         e.printStackTrace();
     }
 
@@ -51,11 +51,11 @@ public class SQLConnection {
      */
     public static void checkTable() {
         if (!enabled) {
-            BetterWhitelistBungee.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
+            BetterWhitelist.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
             return;
         }
 
-        BetterWhitelistBungee.getInstance().getLogger().info("[sql] Checking the UUID table is valid...");
+        BetterWhitelist.getInstance().getLogger().info("[sql] Checking the UUID table is valid...");
 
         try {
             var statement = createStatement();
@@ -76,7 +76,7 @@ public class SQLConnection {
      */
     public static String getDiscordIDFromMinecraft(String uuid) {
         if (!enabled) {
-            BetterWhitelistBungee.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
+            BetterWhitelist.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
             return null;
         }
 
@@ -97,8 +97,8 @@ public class SQLConnection {
         }
 
         catch(Exception e) {
-           handleSQLError(e);
-           return null;
+            handleSQLError(e);
+            return null;
         }
     }
 
@@ -109,7 +109,7 @@ public class SQLConnection {
      */
     public static String getUuidFromDiscordId(String discordID) {
         if (!enabled) {
-            BetterWhitelistBungee.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
+            BetterWhitelist.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
             return null;
         }
 
@@ -141,7 +141,7 @@ public class SQLConnection {
      */
     public static boolean addEntry(String discordID, String uuid) {
         if (!enabled) {
-            BetterWhitelistBungee.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
+            BetterWhitelist.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
             return false;
         }
 
@@ -150,7 +150,7 @@ public class SQLConnection {
             statement.executeUpdate("INSERT IGNORE INTO `minecraft_whitelist` (`discordID`, `minecraft_uuid`) VALUES ('" + discordID + "','" + uuid + "');");
             statement.getConnection().close();
 
-            BetterWhitelistBungee.getInstance().getLogger().info("Added whitelist entry: '" + discordID +"' => '"+ uuid + "'");
+            BetterWhitelist.getInstance().getLogger().info("Added whitelist entry: '" + discordID +"' => '"+ uuid + "'");
 
             return true;
         }
@@ -167,13 +167,13 @@ public class SQLConnection {
      */
     public static boolean removeEntry(String discordID) {
         if (!enabled) {
-            BetterWhitelistBungee.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
+            BetterWhitelist.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
             return false;
         }
 
         // Check to make sure entry exists to be removed.
         if (getUuidFromDiscordId(discordID) == null) {
-            BetterWhitelistBungee.getInstance().getLogger().warning("Request to remove non-existent whitelist entry for ID '"+ discordID +"'.");
+            BetterWhitelist.getInstance().getLogger().warning("Request to remove non-existent whitelist entry for ID '"+ discordID +"'.");
             return false;
         }
 
@@ -182,7 +182,7 @@ public class SQLConnection {
             statement.executeUpdate("DELETE FROM `minecraft_whitelist` WHERE `discordID`='" + discordID + "'");
             statement.getConnection().close();
 
-            BetterWhitelistBungee.getInstance().getLogger().info("Removed whitelist entry: '" + discordID +"'");
+            BetterWhitelist.getInstance().getLogger().info("Removed whitelist entry: '" + discordID +"'");
 
             return true;
         }
@@ -199,7 +199,7 @@ public class SQLConnection {
      */
     public static boolean removeEntryUsingUuid(String uuid) {
         if (!enabled) {
-            BetterWhitelistBungee.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
+            BetterWhitelist.getInstance().getLogger().warning("SQL connection has been disabled in 'config.yml'.");
             return false;
         }
 

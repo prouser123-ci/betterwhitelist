@@ -1,9 +1,15 @@
+# BetterWhitelistBungee
+
+`BetterWhitelistBungee` is the bungee-side plugin for BetterWhitelist, handling the database management and Discord bot self whitelisting.
+
+## Configuration
+
+The default configuration is shown below - comments are removed by the build process, so your `config.yml` won't look like this!
+
+```yaml
 # Whether to connect to the SQL server. Enable this if you want the bot to
 # be able to store whitelisted users.
 enableSql: false
-
-## Whether to disable checking for player UUIDs on join.
-disableUuidChecking: false
 
 # MySQL Database Details
 # The bot requires SELECT, INSERT, CREATE and DELETE privileges.
@@ -13,10 +19,6 @@ mysql:
   port: "3306"
   username: "root"
   password: "password"
-
-# Add player overrides
-overrides:
-  - skyefoxie
 
 discord:
   # Bot token the plugin should use.
@@ -51,4 +53,14 @@ discord:
       enabled: false
       silent: false
       roleId: ''
+```
 
+## Discord Commands
+
+- `-whitelist <username>` - add a user to the whitelist. Throws an error if the user could not be found on Mojang's servers. If a user already has an account registered, and `oneAccountPerUser` is enabled, the user will not be able to add another username.
+- `-unwhitelist` - remove a user from the whitelist.
+- `-help` - display a help message.
+- `-status` - retrieve brief bot status information.
+## Bungee Console Commands
+
+As of yet, there aren't any built-in commands to the bungee console itself. The client-side plugins on each server instance handle those.

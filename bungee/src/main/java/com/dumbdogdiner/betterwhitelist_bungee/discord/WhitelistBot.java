@@ -2,9 +2,11 @@ package com.dumbdogdiner.betterwhitelist_bungee.discord;
 
 import com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungee;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.commands.GetStatusCommand;
+import com.dumbdogdiner.betterwhitelist_bungee.discord.commands.HelpCommand;
+import com.dumbdogdiner.betterwhitelist_bungee.discord.commands.UnwhitelistCommand;
+import com.dumbdogdiner.betterwhitelist_bungee.discord.commands.WhitelistCommand;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.lib.Command;
-import com.dumbdogdiner.betterwhitelist_bungee.discord.listeners.GuildBanListener;
-import com.dumbdogdiner.betterwhitelist_bungee.discord.listeners.GuildLeaveListener;
+import com.dumbdogdiner.betterwhitelist_bungee.discord.listeners.GuildEventListener;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.listeners.MessageListener;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.listeners.ReadyListener;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.PluginConfig;
@@ -18,11 +20,12 @@ import javax.security.auth.login.LoginException;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Discord bot for whitelisting users from DDD itself.
  */
-public class WhitelistBot extends Thread {
+public class WhitelistBot {
 
     private static WhitelistBot instance;
     public static WhitelistBot getInstance() {
@@ -51,8 +54,7 @@ public class WhitelistBot extends Thread {
     /**
      * Initialize the bot.
      */
-    @Override
-    public void run() {
+    public void init() {
         var builder = new JDABuilder(AccountType.BOT)
             .setToken(PluginConfig.getConfig().getString("discord.token"));
 
@@ -61,18 +63,28 @@ public class WhitelistBot extends Thread {
         // Register Events
         builder.addEventListeners(
             new ReadyListener(),
-            new GuildBanListener(),
-            new GuildLeaveListener(),
+            new GuildEventListener(),
             new MessageListener()
         );
 
         // Register Commands
-        addCommand(new GetStatusCommand());
+        addCommand(
+            new GetStatusCommand(),
+            new WhitelistCommand(),
+            new UnwhitelistCommand(),
+            new HelpCommand()
+        );
 
-        builder.setActivity(Activity.watching("the cutest fluffs \uD83E\uDDE1"));
+        getLogger().info(String.format(
+            "[discord] Have %d commands: %s",
+            commands.size(),
+            commands.values().stream().map(Command::getName).collect(Collectors.joining(", "))
+        ));
+
+        builder.setActivity(Activity.watching("the cutest fuzzballs \uD83E\uDDE1"));
 
         try {
-            getLogger().info("[discord] Using access token '" + PluginConfig.getConfig().getString("discord.token") + "'...");
+            getLogger().info("[discord] Attempting connection to Discord...");
             jda = builder.build();
         } catch (LoginException err) {
             getLogger().severe("[discord] WhitelistBot threw an error while trying to authenticate with Discord.");
@@ -83,8 +95,6 @@ public class WhitelistBot extends Thread {
     /**
      * Configure flags for the JDABuilder. Saves memory :3
      * @param builder
-     *
-     * TODO: This breaks: "java.lang.ClassNotFoundException: net.dv8tion.jda.api.utils.cache.CacheFlag"
      */
 
     private static void configureMemory(JDABuilder builder) {
@@ -95,11 +105,11 @@ public class WhitelistBot extends Thread {
 
     /**
      * Add commands to the bot.
-     * @param commands
+     * @param commandsToAdd
      */
-    public static void addCommand(Command... commands) {
-        for (Command cmd : commands) {
-            getCommands().put(cmd.getName(), cmd);
+    public static void addCommand(Command... commandsToAdd) {
+        for (Command cmd : commandsToAdd) {
+            commands.put(cmd.getName(), cmd);
         }
     }
 }

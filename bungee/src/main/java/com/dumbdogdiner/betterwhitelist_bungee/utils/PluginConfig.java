@@ -26,6 +26,14 @@ public class PluginConfig {
     }
 
     /**
+     * Return the prefix used by the Discord bot.
+     * @return
+     */
+    public static String getPrefix() {
+        var prefix = getConfig().getString("discord.prefix");
+        return prefix == null ? "-" : prefix;
+    }
+    /**
      * Save the current cached config to disk.
      * @return
      */

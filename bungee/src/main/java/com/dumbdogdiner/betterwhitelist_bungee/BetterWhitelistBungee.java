@@ -1,7 +1,10 @@
 package com.dumbdogdiner.betterwhitelist_bungee;
 
+import com.dumbdogdiner.betterwhitelist_bungee.bungee.commands.UnwhitelistCommand;
+import com.dumbdogdiner.betterwhitelist_bungee.bungee.commands.WhitelistCommand;
+import com.dumbdogdiner.betterwhitelist_bungee.bungee.commands.WhoisCommand;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.WhitelistBot;
-import com.dumbdogdiner.betterwhitelist_bungee.utils.PluginConfig;
+import com.dumbdogdiner.betterwhitelist_bungee.bungee.listeners.PlayerEventListener;
 import com.dumbdogdiner.betterwhitelist_bungee.utils.SQLConnection;
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -22,20 +25,24 @@ public class BetterWhitelistBungee extends Plugin {
 
     @Override
     public void onEnable() {
-        getProxy().registerChannel(InstanceMessenger.getChannel());
-        getProxy().getPluginManager().registerListener(this, InstanceMessenger.getInstance());
+        getProxy().getPluginManager().registerListener(this, new PlayerEventListener());
+        getProxy().getPluginManager().registerCommand(this, new WhoisCommand());
+        getProxy().getPluginManager().registerCommand(this, new WhitelistCommand());
+        getProxy().getPluginManager().registerCommand(this, new UnwhitelistCommand());
 
-        WhitelistBot.getInstance().start();
-        getLogger().info("[discord] Spawned WhitelistBot thread.");
+        WhitelistBot.getInstance().init();
 
         SQLConnection.checkTable();
-
-        getLogger().info("Will use channel '" + InstanceMessenger.getChannel() + "' for plugin messaging.");
     }
 
     @Override
     public void onDisable() {
-        PluginConfig.saveConfig();
-        getProxy().unregisterChannel(InstanceMessenger.getChannel());
+        // Has the unfortunate downside of overriding changes made to the config.
+        // Temporarily disabled since config isn't modified anywhere else in the plugin.
+        /* PluginConfig.saveConfig(); */
+
+        // Shut down the Discord bot gracefully.
+        WhitelistBot.getJda().shutdown();
+        getLogger().info("Aarrff!! (see you again soon :3)");
     }
 }
