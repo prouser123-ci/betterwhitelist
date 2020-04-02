@@ -5,15 +5,17 @@ import com.dumbdogdiner.betterwhitelist_bungee.bungee.commands.WhitelistCommand;
 import com.dumbdogdiner.betterwhitelist_bungee.bungee.commands.WhoisCommand;
 import com.dumbdogdiner.betterwhitelist_bungee.discord.WhitelistBot;
 import com.dumbdogdiner.betterwhitelist_bungee.bungee.listeners.PlayerEventListener;
-import com.dumbdogdiner.betterwhitelist_bungee.utils.SQLConnection;
+import com.dumbdogdiner.betterwhitelist_bungee.utils.SQL;
 import net.md_5.bungee.api.plugin.Plugin;
 
 /**
- * The Bungee proxy plugin for propagating whitelist changes/bans to all sub-server instances.
+ * The Bungee proxy plugin for propagating whitelist changes/bans to all
+ * sub-server instances.
  */
 public class BetterWhitelistBungee extends Plugin {
 
     private static BetterWhitelistBungee instance;
+
     public static BetterWhitelistBungee getInstance() {
         return instance;
     }
@@ -25,14 +27,16 @@ public class BetterWhitelistBungee extends Plugin {
 
     @Override
     public void onEnable() {
-        getProxy().getPluginManager().registerListener(this, new PlayerEventListener());
-        getProxy().getPluginManager().registerCommand(this, new WhoisCommand());
-        getProxy().getPluginManager().registerCommand(this, new WhitelistCommand());
-        getProxy().getPluginManager().registerCommand(this, new UnwhitelistCommand());
+        var manager = getProxy().getPluginManager();
+
+        manager.registerListener(this, new PlayerEventListener());
+        manager.registerCommand(this, new WhoisCommand());
+        manager.registerCommand(this, new WhitelistCommand());
+        manager.registerCommand(this, new UnwhitelistCommand());
 
         WhitelistBot.getInstance().init();
 
-        SQLConnection.checkTable();
+        SQL.checkTable();
     }
 
     @Override
@@ -42,7 +46,11 @@ public class BetterWhitelistBungee extends Plugin {
         /* PluginConfig.saveConfig(); */
 
         // Shut down the Discord bot gracefully.
-        WhitelistBot.getJda().shutdown();
+        var jda = WhitelistBot.getJda();
+        if (jda != null) {
+            WhitelistBot.getJda().shutdown();
+        }
+
         getLogger().info("Aarrff!! (see you again soon :3)");
     }
 }

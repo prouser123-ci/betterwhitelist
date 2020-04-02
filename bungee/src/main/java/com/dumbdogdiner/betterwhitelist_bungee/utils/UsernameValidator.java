@@ -1,6 +1,5 @@
 package com.dumbdogdiner.betterwhitelist_bungee.utils;
 
-import com.dumbdogdiner.betterwhitelist_bungee.BetterWhitelistBungee;
 import com.google.gson.Gson;
 
 import java.io.*;
@@ -14,6 +13,7 @@ public class UsernameValidator {
 
     /**
      * Fetch the UUID of a player from their Minecraft username.
+     * 
      * @param username The name of the user to fetch from the API.
      * @return Mojang API user object
      */
@@ -33,6 +33,7 @@ public class UsernameValidator {
 
     /**
      * Forms the base URL for the Mojang API request.
+     * 
      * @param username
      * @return
      */
@@ -42,7 +43,9 @@ public class UsernameValidator {
     }
 
     /**
-     * Reads all of a request's body and returns a concatenated string of the contents.
+     * Reads all of a request's body and returns a concatenated string of the
+     * contents.
+     * 
      * @param username
      * @return
      */
@@ -58,8 +61,10 @@ public class UsernameValidator {
             }
 
             input.close();
+            reader.close();
+
             return builder.toString();
-        } catch(Exception err) {
+        } catch (Exception err) {
             err.printStackTrace();
             return null;
         }
@@ -67,14 +72,14 @@ public class UsernameValidator {
     }
 
     /**
-     * Mojang API sends back de-hyphenated UUIDs. This is a util method to add those hyphens back in.
+     * Mojang API sends back de-hyphenated UUIDs. This is a util method to add those
+     * hyphens back in.
+     * 
      * @param uuid
      * @return
      */
     private static String hyphenateUUID(String uuid) {
-        return uuid.replaceFirst(
-            "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
-            "$1-$2-$3-$4-$5"
-        );
+        return uuid.replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
+                "$1-$2-$3-$4-$5");
     }
 }

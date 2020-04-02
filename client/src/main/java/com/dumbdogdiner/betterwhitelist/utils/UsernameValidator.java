@@ -14,20 +14,23 @@ public class UsernameValidator {
 
     /**
      * Fetch the UUID of a player from their Minecraft username.
+     * 
      * @param username
      * @return
      *
-     * TODO: This throws a whole bunch of warning errors into the console for seemingly no reason - e.g.
-     * HK2 service reification failed for [org.glassfish.jersey.message.internal.XmlRootElementJaxbProvider$General] with an exception:
+     *         TODO: This throws a whole bunch of warning errors into the console
+     *         for seemingly no reason - e.g. HK2 service reification failed for
+     *         [org.glassfish.jersey.message.internal.XmlRootElementJaxbProvider$General]
+     *         with an exception:
      *
-     * MultiException stack 1 of 2
-     * java.lang.NoClassDefFoundError: javax/xml/bind/JAXBException
+     *         MultiException stack 1 of 2 java.lang.NoClassDefFoundError:
+     *         javax/xml/bind/JAXBException
      *
-     * MultiException stack 2 of 2
-     * java.lang.IllegalArgumentException: Errors were discovered while reifying SystemDescriptor
+     *         MultiException stack 2 of 2 java.lang.IllegalArgumentException:
+     *         Errors were discovered while reifying SystemDescriptor
      *
-     * Both exceptions triggered by the get method in line 32.
-     * The code, however, works as intended.
+     *         Both exceptions triggered by the get method in line 32. The code,
+     *         however, works as intended.
      */
     public static MojangUser getUser(String username) {
         // Make request to Mojang and decode JSON body.
@@ -41,13 +44,15 @@ public class UsernameValidator {
         var result = new Gson().fromJson(json, MojangUser.class);
         result.id = hyphenateUUID(result.id);
 
-        BetterWhitelist.getInstance().getLogger().info(String.format("Got UUID '%s' for user '%s'.", result.id, result.name));
+        BetterWhitelist.getInstance().getLogger()
+                .info(String.format("Got UUID '%s' for user '%s'.", result.id, result.name));
 
         return result;
     }
 
     /**
      * Forms the base URL for the Mojang API request.
+     * 
      * @param username
      * @return
      */
@@ -57,7 +62,9 @@ public class UsernameValidator {
     }
 
     /**
-     * Reads all of a request's body and returns a concatenated string of the contents.
+     * Reads all of a request's body and returns a concatenated string of the
+     * contents.
+     * 
      * @param username
      * @return
      */
@@ -68,13 +75,16 @@ public class UsernameValidator {
 
             StringBuilder builder = new StringBuilder();
             int character;
+
             while ((character = reader.read()) != -1) {
                 builder.append((char) character);
             }
 
             input.close();
+            reader.close();
+
             return builder.toString();
-        } catch(Exception err) {
+        } catch (Exception err) {
             err.printStackTrace();
             return null;
         }
@@ -82,14 +92,14 @@ public class UsernameValidator {
     }
 
     /**
-     * Mojang API sends back de-hyphenated UUIDs. This is a util method to add those hyphens back in.
+     * Mojang API sends back de-hyphenated UUIDs. This is a util method to add those
+     * hyphens back in.
+     * 
      * @param uuid
      * @return
      */
     private static String hyphenateUUID(String uuid) {
-        return uuid.replaceFirst(
-                "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
-                "$1-$2-$3-$4-$5"
-        );
+        return uuid.replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
+                "$1-$2-$3-$4-$5");
     }
 }

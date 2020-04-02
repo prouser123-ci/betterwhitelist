@@ -14,7 +14,7 @@ plugins {
 }
 
 group 'com.dumbdogdiner'
-version '2.0-SNAPSHOT'
+version '2.0.1'
 
 sourceCompatibility = 11
 
@@ -27,9 +27,13 @@ repositories {
 dependencies {
     implementation group: 'net.md-5', name: 'bungeecord-api', version: '1.15-SNAPSHOT'
 
+    // Exclude voice 
     compile ('net.dv8tion:JDA:4.1.1_105') {
         exclude module: 'opus-java'
     }
+
+    // SQL pools
+    compile ('com.zaxxer:HikariCP:3.4.2')
 }
 
 shadowJar {
@@ -38,6 +42,9 @@ shadowJar {
     processResources {
         expand project.properties
     }
+
+    classifier = ''
+    baseName = 'BetterWhitelistBungee'
 
     minimize()
 }
