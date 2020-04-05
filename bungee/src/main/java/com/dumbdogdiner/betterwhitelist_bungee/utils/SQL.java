@@ -19,7 +19,7 @@ public class SQL {
 
     private static HikariDataSource ds;
 
-    private SQL() {
+    public static void init() {
         // Create and configure SQL configuration.
         var config = new HikariConfig();
         config.setJdbcUrl(databaseUrl);
@@ -31,6 +31,8 @@ public class SQL {
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
         ds = new HikariDataSource(config);
+
+        checkTable();
     }
 
     /**

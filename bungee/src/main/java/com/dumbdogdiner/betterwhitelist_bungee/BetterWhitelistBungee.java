@@ -35,7 +35,8 @@ public class BetterWhitelistBungee extends Plugin {
         manager.registerCommand(this, new UnwhitelistCommand());
 
         WhitelistBot.getInstance().init();
-
+        
+        SQL.init();
         SQL.checkTable();
     }
 
