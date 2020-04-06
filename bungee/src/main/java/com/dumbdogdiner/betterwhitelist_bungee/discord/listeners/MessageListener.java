@@ -22,11 +22,6 @@ public class MessageListener extends ListenerAdapter {
             return;
         }
 
-        if (e.getMessage().isMentioned(WhitelistBot.getJda().getSelfUser())) {
-            e.getChannel().sendMessage("**Hai!! ^w^** My prefix is `" + prefix + "`.").queue();
-            return;
-        }
-
         if (
             !rawContent.startsWith(prefix)
         ) {

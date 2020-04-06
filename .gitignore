@@ -90,3 +90,10 @@ build/
 
 # Editor agnostic.
 *.iml
+
+
+.vscode
+bin/
+.settings
+.classpath
+.project
