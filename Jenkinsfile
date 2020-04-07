@@ -3,10 +3,9 @@
 // Made by @Prouser123 for https://ci.jcx.ovh.
 
 node('docker-cli') {
-  docker.image('adoptopenjdk:11-jdk-hotspot').inside {
+  docker.image('jcxldn/jenkins-containers:jdk11-gradle-ubuntu').inside {
 
     stage('Setup') {
-      sh 'apt-get update && apt-get install git -y'
 
       checkout scm
 
@@ -15,8 +14,8 @@ node('docker-cli') {
     }
 
     stage('Build Bungee') {
-      // Build the code
-      sh 'cd bungee && ./gradlew build -s'
+      // Setup the build environment and build the code
+      sh 'cd bungee && gradle wrapper && ./gradlew build -s'
         
       archiveArtifacts artifacts: 'bungee/build/libs/*.jar', fingerprint: true
 				
@@ -24,8 +23,8 @@ node('docker-cli') {
     }
       
     stage('Build Bukkit') {	
-      // Build the code
-      sh 'cd client && ./gradlew build -s'
+      // Setup the build environment and build the code
+      sh 'cd client && gradle wrapper && ./gradlew build -s'
 				
       archiveArtifacts artifacts: 'client/build/libs/*.jar', fingerprint: true
 				
