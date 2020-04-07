@@ -6,7 +6,7 @@ node('docker-cli') {
   docker.image('adoptopenjdk:11-jdk-hotspot').inside {
 
     stage('Setup') {
-      sh 'apt update && apt install git -y'
+      sh 'apt-get update && apt-get install git -y'
 
       checkout scm
 
