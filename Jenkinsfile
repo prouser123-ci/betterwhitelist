@@ -3,25 +3,27 @@
 // Made by @Prouser123 for https://ci.jcx.ovh.
 
 node('docker-cli') {
-  scmCloneStage()
-    
-  docker.image('jcxldn/jenkins-containers:jdk11-gradle-ubuntu').inside {
+  docker.image('adoptopenjdk:11-jdk-hotspot').inside {
+
+    stage('Setup') {
+      checkout scm
+
+      sh 'cd bungee && chmod +x ./gradlew'
+      sh 'cd client && chmod +x ./gradlew'
+    }
+
     stage('Build Bungee') {
-      unstash 'scm'
-        
-      // Setup the build environment, and build the code.
-      sh 'cd bungee && chmod +x ./gradlew && gradle wrapper && ./gradlew build -s'
+      // Build the code
+      sh 'cd bungee && ./gradlew build -s'
         
       archiveArtifacts artifacts: 'bungee/build/libs/*.jar', fingerprint: true
 				
       ghSetStatus("The build passed.", "success", "ci/bungee")
     }
       
-    stage('Build Bukkit') {
-      unstash 'scm'
-				
-      // Setup the build environment, and build the code.
-      sh 'cd client && chmod +x ./gradlew && gradle wrapper && ./gradlew build -s'
+    stage('Build Bukkit') {	
+      // Build the code
+      sh 'cd client && ./gradlew build -s'
 				
       archiveArtifacts artifacts: 'client/build/libs/*.jar', fingerprint: true
 				
