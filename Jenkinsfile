@@ -6,6 +6,8 @@ node('docker-cli') {
   docker.image('adoptopenjdk:11-jdk-hotspot').inside {
 
     stage('Setup') {
+      sh 'apt update && apt install git -y'
+
       checkout scm
 
       sh 'cd bungee && chmod +x ./gradlew'
